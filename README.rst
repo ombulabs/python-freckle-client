@@ -24,7 +24,7 @@ Usage
 
 Just import the client, create an instance and call the ``fetch_json`` method: 
 
-..code-block:: python
+.. code-block:: python
 
     from freckle_client.client import FreckleClient
 
@@ -41,7 +41,7 @@ Just import the client, create an instance and call the ``fetch_json`` method:
 
 Or if you want to use the V2 API:
 
-..code-block:: python
+.. code-block:: python
 
     from freckle_client.client import FreckleClientV2
 
