@@ -1,0 +1,9 @@
+include AUTHORS
+include LICENSE
+include DESCRIPTION
+include CHANGELOG.txt
+include README.md
+graft freckle_client
+global-exclude *.orig *.pyc *.log *.swp local_settings.py
+prune freckle_client/tests/coverage
+prune freckle_client/.ropeproject

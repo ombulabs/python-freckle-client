@@ -1,0 +1,6 @@
+coverage
+fabric
+flake8
+ipdb
+mock
+tox
