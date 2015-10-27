@@ -1,5 +1,12 @@
 === 0.1.X (onggoing, to be released as 0.2) ===
 
+=== 0.2.0 ===
+
+* Raising proper HTTP exception from the Requests library instead of our
+  self-made FreckleClientException if the request was not successful.
+* IMPORTANT: If you were catching FreckleClientException before, please make
+  sure to catch `requests.exceptions.HttpError` now.
+
 === 0.1 ===
 - Initial commit
 
