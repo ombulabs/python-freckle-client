@@ -122,8 +122,7 @@ class FreckleClientV2(object):
             http_method, url, params=query_params, headers=headers,
             data=json.dumps(post_args))
 
-        if response.status_code != 200:
-            raise exceptions.FreckleClientException(
-                "Freckle API Response is not 200", response.text)
+        # if request failed (i.e. HTTP status code not 20x), raise appropriate error
+        response.raise_for_status()
 
         return response.json()
