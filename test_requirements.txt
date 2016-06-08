@@ -1,5 +1,5 @@
 coverage
-fabric
+fabric3
 flake8
 ipdb
 mock

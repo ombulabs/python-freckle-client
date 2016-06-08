@@ -68,7 +68,7 @@ class FreckleClient(object):
             raise exceptions.FreckleClientException(
                 "Freckle API Response is not 200", response.text)
 
-        return response.json()
+        return json.loads(response.content)
 
 
 class FreckleClientV2(object):
@@ -125,4 +125,4 @@ class FreckleClientV2(object):
         # if request failed (i.e. HTTP status code not 20x), raise appropriate error
         response.raise_for_status()
 
-        return response.json()
+        return json.loads(response.content)
