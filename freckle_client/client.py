@@ -9,6 +9,7 @@ import json
 
 import requests
 
+from . import __version__
 from . import exceptions
 
 
@@ -111,7 +112,7 @@ class FreckleClientV2(object):
 
         # set content type and accept headers to handle JSON
         headers['Accept'] = 'application/json'
-        headers['User-Agent'] = "python-freckle-client/0.1",
+        headers['User-Agent'] = "python-freckle-client/{}".format(__version__)
         headers['X-FreckleToken'] = self.access_token
 
         # construct the full URL without query parameters
@@ -122,7 +123,8 @@ class FreckleClientV2(object):
             http_method, url, params=query_params, headers=headers,
             data=json.dumps(post_args))
 
-        # if request failed (i.e. HTTP status code not 20x), raise appropriate error
+        # if request failed (i.e. HTTP status code not 20x), raise appropriate
+        # error
         response.raise_for_status()
 
-        return json.loads(response.content)
+        return json.loads(response.content.decode('utf-8'))
