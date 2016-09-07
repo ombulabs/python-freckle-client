@@ -4,6 +4,7 @@
 
 * prepared app for Python3.x
 * Fixed request headers
+* Fixed response handling
 
 === 0.2 ===
 

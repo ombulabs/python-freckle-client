@@ -127,4 +127,8 @@ class FreckleClientV2(object):
         # error
         response.raise_for_status()
 
-        return json.loads(response.content.decode('utf-8'))
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('utf-8')
+
+        return json.loads(content)
