@@ -1,4 +1,6 @@
-=== 0.3.X (onggoing, to be released as 0.4) ===
+=== 0.4.0 ===
+
+* Uses new application name & URL (nokotime.com)
 
 === 0.3.X ===
 

@@ -1,7 +1,7 @@
 Freckle Client
 ==============
 
-A super simple Freckle API client implementation.
+A super simple Freckle/Noko API client implementation.
 
 Installation
 ------------

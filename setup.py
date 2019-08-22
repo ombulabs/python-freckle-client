@@ -54,7 +54,7 @@ setup(
     long_description=read('README.rst'),
     license='The MIT License',
     platforms=['OS Independent'],
-    keywords='letsfreckle, freckle, api, client',
+    keywords='nokotime, noko, api, client',
     author='Martin Brochhaus',
     author_email='mbrochh@gmail.com',
     url="https://github.com/bitmazk/freckle-client",
