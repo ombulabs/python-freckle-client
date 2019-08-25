@@ -29,7 +29,7 @@ class FreckleClient(object):
     def fetch_json(self, uri_path, http_method='GET', headers=None,
                    query_params=None, post_args=None):
         """
-        Fetch some JSON from Letsfreckle.
+        Fetch some JSON from Noko.
 
         For example, fetch some entries like so:
 
@@ -57,7 +57,7 @@ class FreckleClient(object):
         query_params['token'] = self.api_token
 
         # construct the full URL without query parameters
-        url = 'https://{0}.letsfreckle.com/api/{1}.json'.format(
+        url = 'https://{0}.nokotime.com/api/{1}.json'.format(
             self.account_name, uri_path)
 
         # perform the HTTP requests, if possible uses OAuth authentication
@@ -87,7 +87,7 @@ class FreckleClientV2(object):
     def fetch_json(self, uri_path, http_method='GET', headers=None,
                    query_params=None, post_args=None):
         """
-        Fetch some JSON from Letsfreckle.
+        Fetch some JSON from Noko.
 
         For example, fetch some entries like so:
 
@@ -116,7 +116,7 @@ class FreckleClientV2(object):
         headers['X-FreckleToken'] = self.access_token
 
         # construct the full URL without query parameters
-        url = 'https://api.letsfreckle.com/v2/{0}'.format(uri_path)
+        url = 'https://api.nokotime.com/v2/{0}'.format(uri_path)
 
         # perform the HTTP requests, if possible uses OAuth authentication
         response = requests.request(
