@@ -50,7 +50,7 @@ def read(fname):
 setup(
     name="python-freckle-client",
     version=app.__version__,
-    description=read('DESCRIPTION'),
+    description='A super simple Freckle/Noko API client implementation.',
     long_description=read('README.rst'),
     license='The MIT License',
     platforms=['OS Independent'],
