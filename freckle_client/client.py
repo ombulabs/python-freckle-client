@@ -69,7 +69,9 @@ class FreckleClient(object):
             raise exceptions.FreckleClientException(
                 "Freckle API Response is not 200", response.text)
 
-        return json.loads(response.content)
+        # return content if successful response with content,
+        # otherwise return None
+        return json.loads(response.content) if response.content else None
 
 
 class FreckleClientV2(object):
@@ -131,4 +133,6 @@ class FreckleClientV2(object):
         if isinstance(content, bytes):
             content = content.decode('utf-8')
 
-        return json.loads(content)
+        # return content if successful response with content,
+        # otherwise return None
+        return json.loads(content) if content else None
