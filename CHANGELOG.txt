@@ -1,3 +1,8 @@
+=== 0.5.0 ===
+
+* Handle successful No Content response
+* Handle pagination on the v2 API
+
 === 0.4.0 ===
 
 * Uses new application name & URL (nokotime.com)

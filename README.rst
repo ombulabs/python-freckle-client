@@ -49,7 +49,6 @@ Or if you want to use the V2 API:
     entries = client.fetch_json(
         'entries',
         query_params={
-            'per_page': 1000,
             'search[from]': '2015-01-01',
             'search[to]': '2015-01-31',
             'search[projects]': [1423, 24545, ],
@@ -66,7 +65,7 @@ If you want to contribute to this project, please perform the following steps
 
     # Fork this repository
     # Clone your fork
-    mkvirtualenv -p python2.7 freckle-client
+    mkvirtualenv -p python3.8 freckle-client
     make develop
 
     git co -b feature_branch master

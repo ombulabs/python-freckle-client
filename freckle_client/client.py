@@ -114,7 +114,6 @@ class FreckleClientV2:
             entries = self.fetch_json(
                 'entries',
                 query_params={
-                    'per_page': 1000,
                     'search[from]': '2015-01-01',
                     'search[to]': '2015-01-31',
                     'search[projects]': [1423, 24545, ]),
