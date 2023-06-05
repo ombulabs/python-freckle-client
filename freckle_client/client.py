@@ -15,6 +15,7 @@ from . import exceptions
 
 class FreckleClient(object):
     """Simple client implementation to fetch json data from the v1 API."""
+
     def __init__(self, account_name, api_token):
         """
         Creates a ``FreckleClient`` instance.
@@ -26,8 +27,14 @@ class FreckleClient(object):
         self.account_name = account_name
         self.api_token = api_token
 
-    def fetch_json(self, uri_path, http_method='GET', headers=None,
-                   query_params=None, post_args=None):
+    def fetch_json(
+        self,
+        uri_path,
+        http_method="GET",
+        headers=None,
+        query_params=None,
+        post_args=None,
+    ):
         """
         Fetch some JSON from Noko.
 
@@ -53,21 +60,27 @@ class FreckleClient(object):
             post_args = {}
 
         # set content type and accept headers to handle JSON
-        headers['Accept'] = 'application/json'
-        query_params['token'] = self.api_token
+        headers["Accept"] = "application/json"
+        query_params["token"] = self.api_token
 
         # construct the full URL without query parameters
-        url = 'https://{0}.nokotime.com/api/{1}.json'.format(
-            self.account_name, uri_path)
+        url = "https://{0}.nokotime.com/api/{1}.json".format(
+            self.account_name, uri_path
+        )
 
         # perform the HTTP requests, if possible uses OAuth authentication
         response = requests.request(
-            http_method, url, params=query_params, headers=headers,
-            data=json.dumps(post_args))
+            http_method,
+            url,
+            params=query_params,
+            headers=headers,
+            data=json.dumps(post_args),
+        )
 
         if response.status_code != 200:
             raise exceptions.FreckleClientException(
-                "Freckle API Response is not 200", response.text)
+                "Freckle API Response is not 200", response.text
+            )
 
         # return content if successful response with content,
         # otherwise return None
@@ -76,6 +89,7 @@ class FreckleClient(object):
 
 class FreckleClientV2(object):
     """Simple client implementation to fetch json data from the v2 API."""
+
     def __init__(self, access_token):
         """
         Creates a ``FreckleClient`` instance.
@@ -86,8 +100,14 @@ class FreckleClientV2(object):
         """
         self.access_token = access_token
 
-    def fetch_json(self, uri_path, http_method='GET', headers=None,
-                   query_params=None, post_args=None):
+    def fetch_json(
+        self,
+        uri_path,
+        http_method="GET",
+        headers=None,
+        query_params=None,
+        post_args=None,
+    ):
         """
         Fetch some JSON from Noko.
 
@@ -113,26 +133,47 @@ class FreckleClientV2(object):
             post_args = {}
 
         # set content type and accept headers to handle JSON
-        headers['Accept'] = 'application/json'
-        headers['User-Agent'] = "python-freckle-client/{}".format(__version__)
-        headers['X-FreckleToken'] = self.access_token
+        headers["Accept"] = "application/json"
+        headers["User-Agent"] = "python-freckle-client/{}".format(__version__)
+        headers["X-FreckleToken"] = self.access_token
 
         # construct the full URL without query parameters
-        url = 'https://api.nokotime.com/v2/{0}'.format(uri_path)
-
-        # perform the HTTP requests, if possible uses OAuth authentication
-        response = requests.request(
-            http_method, url, params=query_params, headers=headers,
-            data=json.dumps(post_args))
-
-        # if request failed (i.e. HTTP status code not 20x), raise appropriate
-        # error
-        response.raise_for_status()
-
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('utf-8')
-
+        url = "https://api.nokotime.com/v2/{0}".format(uri_path)
+        response = self._make_request(
+            http_method, url, headers, query_params, post_args
+        )
         # return content if successful response with content,
         # otherwise return None
-        return json.loads(content) if content else None
+        return response
+
+    # private
+
+    @staticmethod
+    def _make_request(
+        http_method, url, headers=None, query_params=None, post_args=None
+    ):
+        results = []
+        while url:
+            # perform the HTTP requests, if possible uses OAuth authentication
+            response = requests.request(
+                http_method,
+                url,
+                params=query_params,
+                headers=headers,
+                data=json.dumps(post_args),
+            )
+            # if request failed (i.e. HTTP status code not 20x), raise appropriate error
+            response.raise_for_status()
+
+            if not response.content:
+                return None
+
+            results.extend(response.json())
+            next_link = response.links.get("next")
+
+            if not next_link:
+                break
+
+            url = next_link["url"]
+
+        return results
