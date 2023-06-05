@@ -36,7 +36,11 @@ from setuptools import find_packages, setup
 import freckle_client as app
 
 dev_requires = [
+    "black",
     "flake8",
+    "isort",
+    "mypy",
+    "pylint",
 ]
 
 install_requires = [
