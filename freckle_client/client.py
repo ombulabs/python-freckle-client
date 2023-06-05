@@ -6,19 +6,19 @@ https://github.com/sarumont/py-trello/blob/master/trello/__init__.py#L108
 
 """
 import json
+from typing import List, Optional
 
 import requests
 
-from . import __version__
-from . import exceptions
+from . import __version__, exceptions
 
 
-class FreckleClient(object):
+class FreckleClient:
     """Simple client implementation to fetch json data from the v1 API."""
 
-    def __init__(self, account_name, api_token):
+    def __init__(self, account_name: str, api_token: str):
         """
-        Creates a ``FreckleClient`` instance.
+        Create a ``FreckleClient`` instance.
 
         :account_name: Your Freckle account name.
         :api_token: Your Freckle API token.
@@ -29,12 +29,12 @@ class FreckleClient(object):
 
     def fetch_json(
         self,
-        uri_path,
-        http_method="GET",
-        headers=None,
-        query_params=None,
-        post_args=None,
-    ):
+        uri_path: str,
+        http_method: str = "GET",
+        headers: Optional[dict] = None,
+        query_params: Optional[dict] = None,
+        post_args: Optional[dict] = None,
+    ) -> Optional[List[dict]]:
         """
         Fetch some JSON from Noko.
 
@@ -64,9 +64,7 @@ class FreckleClient(object):
         query_params["token"] = self.api_token
 
         # construct the full URL without query parameters
-        url = "https://{0}.nokotime.com/api/{1}.json".format(
-            self.account_name, uri_path
-        )
+        url = f"https://{self.account_name}.nokotime.com/api/{uri_path}.json"
 
         # perform the HTTP requests, if possible uses OAuth authentication
         response = requests.request(
@@ -87,12 +85,12 @@ class FreckleClient(object):
         return json.loads(response.content) if response.content else None
 
 
-class FreckleClientV2(object):
+class FreckleClientV2:
     """Simple client implementation to fetch json data from the v2 API."""
 
-    def __init__(self, access_token):
+    def __init__(self, access_token: str):
         """
-        Creates a ``FreckleClient`` instance.
+        Create a ``FreckleClient`` instance.
 
         :account_name: Your Freckle account name.
         :api_token: Your Freckle API token.
@@ -102,12 +100,12 @@ class FreckleClientV2(object):
 
     def fetch_json(
         self,
-        uri_path,
-        http_method="GET",
-        headers=None,
-        query_params=None,
-        post_args=None,
-    ):
+        uri_path: str,
+        http_method: str = "GET",
+        headers: Optional[dict] = None,
+        query_params: Optional[dict] = None,
+        post_args: Optional[dict] = None,
+    ) -> Optional[List[dict]]:
         """
         Fetch some JSON from Noko.
 
@@ -134,11 +132,11 @@ class FreckleClientV2(object):
 
         # set content type and accept headers to handle JSON
         headers["Accept"] = "application/json"
-        headers["User-Agent"] = "python-freckle-client/{}".format(__version__)
+        headers["User-Agent"] = f"python-freckle-client/{__version__}"
         headers["X-FreckleToken"] = self.access_token
 
         # construct the full URL without query parameters
-        url = "https://api.nokotime.com/v2/{0}".format(uri_path)
+        url = f"https://api.nokotime.com/v2/{uri_path}"
         response = self._make_request(
             http_method, url, headers, query_params, post_args
         )
@@ -150,9 +148,13 @@ class FreckleClientV2(object):
 
     @staticmethod
     def _make_request(
-        http_method, url, headers=None, query_params=None, post_args=None
-    ):
-        results = []
+        http_method: str,
+        url: str,
+        headers: Optional[dict] = None,
+        query_params: Optional[dict] = None,
+        post_args: Optional[dict] = None,
+    ) -> Optional[List[dict]]:
+        results: list = []
         while url:
             # perform the HTTP requests, if possible uses OAuth authentication
             response = requests.request(
@@ -162,7 +164,8 @@ class FreckleClientV2(object):
                 headers=headers,
                 data=json.dumps(post_args),
             )
-            # if request failed (i.e. HTTP status code not 20x), raise appropriate error
+            # if request failed (i.e. HTTP status code not 20x),
+            # raise appropriate error
             response.raise_for_status()
 
             if not response.content:

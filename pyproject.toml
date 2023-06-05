@@ -1,0 +1,20 @@
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+exclude = ["venv"]
+# Disable import order errors: AZ100
+# Ignore missing docstrings in __init__: D107
+# Ignore missing type annotation for self: ANN101
+# Ignore missing type annotation for special methods (i.e. __init__): ANN204
+# Ignore missing type annotation for cls: ANN102
+# Conflicts with W504 and no longer conforms to PEP8: W503
+extend-ignore = ["AZ100", "D107", "ANN101", "ANN204", "ANN102", "W503"]
+literal-inline-quotes = "double"
+literal-multiline-quotes = "double"
+
+[tool.pylint."MESSAGES CONTROL"]
+max-args = 6
+fail-under = 9
+# Most filters will have only one public method.
+min-public-methods = 1

@@ -1,0 +1,13 @@
+-r requirements.txt
+
+#### Typing
+mypy==0.991
+mypy-extensions==0.4.3
+
+#### Linting
+flake8==6.0.0
+pre-commit==3.0.0
+pylint==2.16.1
+
+### Formatting
+isort

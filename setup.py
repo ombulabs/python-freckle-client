@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+# flake8: noqa
+# pylint: skip-file
 """
 Python setup file for the freckle_client app.
 
@@ -28,16 +30,17 @@ http://docs.python.org/2/distutils/sourcedist.html
 
 """
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
+
 import freckle_client as app
 
-
 dev_requires = [
-    'flake8',
+    "flake8",
 ]
 
 install_requires = [
-    'requests',
+    "requests",
 ]
 
 
@@ -45,23 +48,24 @@ def read(fname):
     try:
         return open(os.path.join(os.path.dirname(__file__), fname)).read()
     except IOError:
-        return ''
+        return ""
+
 
 setup(
     name="python-freckle-client",
     version=app.__version__,
-    description='A super simple Freckle/Noko API client implementation.',
-    long_description=read('README.rst'),
-    license='The MIT License',
-    platforms=['OS Independent'],
-    keywords='nokotime, noko, api, client',
-    author='Martin Brochhaus',
-    author_email='mbrochh@gmail.com',
+    description="A super simple Freckle/Noko API client implementation.",
+    long_description=read("README.rst"),
+    license="The MIT License",
+    platforms=["OS Independent"],
+    keywords="nokotime, noko, api, client",
+    author="Martin Brochhaus",
+    author_email="mbrochh@gmail.com",
     url="https://github.com/bitmazk/freckle-client",
     packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
     extras_require={
-        'dev': dev_requires,
+        "dev": dev_requires,
     },
 )

@@ -9,6 +9,7 @@ class FreckleClientException(Exception):
     the Requests module).
 
     """
-    def __init__(self, message, response):
-        super(FreckleClientException, self).__init__(message)
+
+    def __init__(self, message: str, response: str):
+        super().__init__(message)
         self.response = response
