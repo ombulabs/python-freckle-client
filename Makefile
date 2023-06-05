@@ -1,7 +1,7 @@
 develop: setup-git
 	pip install "file://`pwd`#egg=freckle_client[dev]"
 	pip install -e .
-	pip install -r test_requirements.txt
+	pip install -r requirements-dev.txt
 
 setup-git:
 	git config branch.autosetuprebase always
@@ -9,5 +9,5 @@ setup-git:
 
 lint-python:
 	@echo "Linting Python files"
-	PYFLAKES_NODOCTEST=1 flake8 freckle_client
+	pre-commit run --all-files
 	@echo ""
