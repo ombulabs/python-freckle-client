@@ -13,6 +13,7 @@ from noko_client.schemas import (
     CreateNokoEntryParameters,
     EditNokoEntryParameters,
     GetNokoEntriesParameters,
+    GetNokoTagsParameters,
 )
 from noko_client.schemas.utilities import (
     date_to_string,
@@ -39,8 +40,7 @@ class NokoClient(BaseClient):
     def list_entries(self, **kwargs: dict) -> list[dict] | None:
         """List all entries.
 
-        By default, extracts all entries. The entries to extract can be filtered based on accepted Keyword Arguments.
-        Noko List Entries Documentation: https://developer.nokotime.com/v2/entries/#list-entries
+        By default, retrieves all entries. The entries to retrieve can be filtered based on accepted Keyword Arguments.
 
         Keyword Args:
             user_ids (str | list | None): IDs of users to filter. If provided as a string, must be comma separated.
@@ -165,7 +165,9 @@ class NokoClient(BaseClient):
         self.fetch_json(uri, post_args=post_args, http_method="PUT")
 
     def mark_as_approved(
-        self, entry_ids: int | str | list[int | str], approved_at: str | datetime | None = None
+        self,
+        entry_ids: int | str | list[int | str],
+        approved_at: str | datetime | None = None,
     ) -> None:
         """Mark an entry or a list of entries as approved.
 
@@ -229,3 +231,161 @@ class NokoClient(BaseClient):
             (None): If unsuccessful, will raise an exception.
         """
         self.fetch_json(f"entries/{entry_id}", http_method="DELETE")
+
+    # Tag related methods
+
+    def list_tags(self, **kwargs: dict) -> list[dict] | None:
+        """List all tags.
+
+        By default, retrieves all tags. The tags to retrieve can be filtered based on accepted Keyword Arguments.
+
+        Keyword Args:
+            name (str | None): Only tags containing the provided string in the name are returned. Defaults to None.
+            billable (bool | None): Return only billable or unbillable tags. Defaults to both (set to None).
+
+        Returns:
+            (list[dict]): All retrieved tags as a list of dictionaries.
+        """
+        params = GetNokoTagsParameters(**kwargs).model_dump()
+        return self.fetch_json("tags", query_params=params, http_method="GET")
+
+    def create_tags(self, names: list[str]) -> list[dict] | None:
+        """Create new Noko tags.
+
+        If any one tag cannot be created for any reason, it will be ignored and will not affect the response.
+
+        Args:
+            names (list[str]): A list of the names of the tags to create. Adding a "*" at the end of a string
+                indicates that the tag is unbillable.
+
+        Returns:
+            (list[dict]): A list of all created tags.
+        """
+        return self.fetch_json("tags", post_args={"names": names}, http_method="POST")
+
+    def get_single_tag(self, tag_id: int | str) -> list[dict] | None:
+        """Retrieve a single tag based on the tag ID.
+
+        Args:
+            tag_id (str | int): the ID of the tag to retrieve.
+
+        Returns:
+            (list[dict]): The retrieved tag as a dictionary.
+        """
+        return self.fetch_json(f"tags/{tag_id}", http_method="GET")
+
+    def get_all_entries_for_tag(
+        self, tag_id: str | int, **kwargs: dict
+    ) -> list[dict] | None:
+        """Retrieve all time entries associated with a tag.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            tag_id (str | int): The ID of the tag to retrieve entries for.
+
+        Keyword Args:
+            user_ids (str | list | None): IDs of users to filter. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            description (str | None): Only descriptions containing the provided text will be returned. Defaults to None.
+            project_ids (str | list | None): IDs of projects to filter for. If provided as a string, must be comma
+                separated. If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_ids (str | list | None): IDs of users to filter for. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_filter_type (str | None): The type of filter to apply if filtering for tag_ids. Defaults to None.
+            from_ (str | datetime | None): The date from which to search. Only entries logged on this day onwards
+                will be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            to (str | datetime | None): The date up to which to search. Only entries logged up to this day will
+                be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            invoiced (bool | str | None): Whether to filter for invoiced or uninvoiced entries. If provided as string,
+                must be lower case. Defaults to None.
+            updated_from (str | datetime | None): Only entries with updates from this timestamp onwards are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            updated_to (str | datetime | None): Only entries with updates up to this timestamp are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            billable (bool | str | None): Whether to filter for billable or unbillable entries. If provided as string,
+                must be lower case. Defaults to None.
+            approved_at_from (str | datetime | None): Only entries with approvals from this date on will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+            approved_at_to (str | datetime | None): Only entries with approvals up to this date will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+
+        Returns:
+            (list[dict]): A list of all retrieved entries meeting the specified criteria.
+        """
+        params = GetNokoEntriesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"tags/{tag_id}/entries", query_params=params, http_method="GET"
+        )
+
+    def edit_tag(self, tag_id: str | int, name: str) -> list[dict] | None:
+        """Edit a single tag based on the tag ID.
+
+        Args:
+            tag_id (str | int): the ID of the tag to edit.
+            name (str): The name for the tag. Adding a "*" at the end of the string indicates an unbillable tag.
+
+        Returns:
+            (list[dict]): The edited tag as a dictionary.
+        """
+        return self.fetch_json(
+            f"tags/{tag_id}", post_args={"name": name}, http_method="PUT"
+        )
+
+    def merge_tag_into_this_tag(
+        self, tag_id: str | int, tag_to_merge_id: str | int
+    ) -> None:
+        """Merge a tag into another one.
+
+        When one tag is merged into another, the entries associated with the tag are associated with the new tag,
+        and any instances of the old tags are replaced with the new tags in the Entry Description. This action is
+        permanent, so you cannot undo after you merge tags.
+
+        Args:
+            tag_id (str | int): The ID of the tag to keep. This is the tag the other tag will be merged into.
+            tag_to_merge_id (str | int): The ID of the tag to merge. This is the tag that will be merged into the
+                other one.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        self.fetch_json(
+            f"tags/{tag_id}/merge",
+            post_args={"tag_id": tag_to_merge_id},
+            http_method="PUT",
+        )
+
+    def delete_single_tag(self, tag_id: str | int) -> None:
+        """Delete a single tag.
+
+        When a tag is deleted, entries associated with it are not deleted. This action will, however, affect their
+        descriptions. It will be updated so that the tag's text becomes part of the description.
+
+        Args:
+            tag_id (str | int): The ID of the tag to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        self.fetch_json(f"tags/{tag_id}", http_method="DELETE")
+
+    def delete_tags(self, tag_ids: list[str | int]) -> None:
+        """Delete multiple tags at once.
+
+        When a tag is deleted, entries associated with it are not deleted. This action will, however, affect their
+        descriptions. It will be updated so that the tag's text becomes part of the description.
+
+        If one of the tags in the provided list of IDs cannot be deleted, it will be ignored and it will not affect
+        the response.
+
+        Args:
+            tag_ids (list [str | int]): The list of IDs of the tags to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        tag_ids = list_to_list_of_integers(tag_ids)
+        self.fetch_json(
+            "tags/delete", post_args={"tag_ids": tag_ids}, http_method="DELETE"
+        )

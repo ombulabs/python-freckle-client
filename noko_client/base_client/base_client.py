@@ -3,7 +3,6 @@
 Handle the HTTP request to the Noko API.
 """
 import json
-import logging
 
 import requests
 
