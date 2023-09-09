@@ -11,8 +11,11 @@ from datetime import datetime
 from noko_client.base_client import BaseClient
 from noko_client.schemas import (
     CreateNokoEntryParameters,
+    CreateNokoProjectParameters,
     EditNokoEntryParameters,
+    EditNokoProjectParameters,
     GetNokoEntriesParameters,
+    GetNokoProjectsParameters,
     GetNokoTagsParameters,
 )
 from noko_client.schemas.utilities import (
@@ -389,3 +392,230 @@ class NokoClient(BaseClient):
         self.fetch_json(
             "tags/delete", post_args={"tag_ids": tag_ids}, http_method="DELETE"
         )
+
+    def list_projects(self, **kwargs: dict) -> list[dict] | None:
+        """List all projects from Noko.
+
+        By default, retrieves all projects. Projects to retrieve can be filtered based on accepted Keyword Arguments.
+
+        Keyword Args:
+            name (str | None): Only projects containing this string in the name are returned. Defaults to None.
+            project_group_ids (str | list | None): Only projects belonging to the group IDs provided are returned.
+                Accepts a comma separated string of IDs or a list of IDs. Defaults to None.
+            billing_increment (int | None): Only projects with the specified billing increment are returned.
+                Accepted values: 1, 5, 6, 10, 15, 20, 30, 60. Defaults to None.
+            enabled (bool | None): Return only active or inactive projects. Defaults to None.
+            billable (bool | None): Return only billable or unbillable projects. Defaults to None.
+
+        Returns:
+            (list[dict]): A list of retrieved projects.
+        """
+        params = GetNokoProjectsParameters(**kwargs).model_dump()
+        return self.fetch_json("projects", query_params=params, http_method="GET")
+
+    def get_single_project(self, project_id: str | int) -> list[dict] | None:
+        """Retrieve a single project based on the project ID.
+
+        Args:
+            project_id (str | int): the ID of the entry to retrieve.
+
+        Returns:
+            (list[dict]): The retrieved project as a dictionary.
+        """
+        return self.fetch_json(f"projects/{project_id}", http_method="GET")
+
+    def create_project(self, **kwargs: dict) -> list[dict] | None:
+        """Create new project in Noko.
+
+        Keyword Args:
+            name (str): The name of the project to create.
+            billable (bool | None): Whether the project is billable or unabillable. Defaults to True.
+            project_group_id (str | int | None): The ID of the project group the project will be associated with.
+                Defaults to None.
+            billing_increment (int | None): The billing increment to use for the project. The default amount will be
+                the account's default billing increment (which is 15).
+                Accepted values: 1, 5, 6, 10, 15, 20, 30, 60
+            color (str | None): A hexadecimal color code to use as the project's color.
+
+        Returns:
+            (list[dict]): The project created with the provided information as a dictionary.
+        """
+        data = CreateNokoProjectParameters(**kwargs).model_dump()
+        return self.fetch_json("projects", post_args=data, http_method="POST")
+
+    def get_all_entries_for_project(
+        self, project_id: str | int, **kwargs: dict
+    ) -> list[dict] | None:
+        """Retrieve all time entries associated with a project.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            project_id (str | int): The ID of the project to retrieve entries for.
+
+        Keyword Args:
+            user_ids (str | list | None): IDs of users to filter. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            description (str | None): Only descriptions containing the provided text will be returned. Defaults to None.
+            project_ids (str | list | None): IDs of projects to filter for. If provided as a string, must be comma
+                separated. If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_ids (str | list | None): IDs of users to filter for. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_filter_type (str | None): The type of filter to apply if filtering for tag_ids. Defaults to None.
+            from_ (str | datetime | None): The date from which to search. Only entries logged on this day onwards
+                will be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            to (str | datetime | None): The date up to which to search. Only entries logged up to this day will
+                be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            invoiced (bool | str | None): Whether to filter for invoiced or uninvoiced entries. If provided as string,
+                must be lower case. Defaults to None.
+            updated_from (str | datetime | None): Only entries with updates from this timestamp onwards are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            updated_to (str | datetime | None): Only entries with updates up to this timestamp are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            billable (bool | str | None): Whether to filter for billable or unbillable entries. If provided as string,
+                must be lower case. Defaults to None.
+            approved_at_from (str | datetime | None): Only entries with approvals from this date on will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+            approved_at_to (str | datetime | None): Only entries with approvals up to this date will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+
+        Returns:
+            (list[dict]): A list of all retrieved entries meeting the specified criteria.
+        """
+        params = GetNokoEntriesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"projects/{project_id}/entries", query_params=params, http_method="GET"
+        )
+
+    def get_expenses_for_project(self) -> None:
+        """Retrieve expenses associated with a project."""
+        raise NotImplementedError("Uh oh! This method has not been implemented yet.")
+
+    def edit_project(self, project_id: str | int, **kwargs: dict) -> list[dict] | None:
+        """Edit an existing project.
+
+        Args:
+            project_id (int | str): The ID of the project to edit.
+
+        Keyword Args:
+            name (str | None): Name of the project. If not provided, date will not be changed.
+            project_group_id (str | int | None): The ID of the project group the project will be associated with.
+            billing_increment (int | None): Billing increment to be used by the project.
+            color (str | None): The hexadecimal string representing a color to associate with the project.
+
+        Returns:
+            (list[dict]): The edited project with the provided information as a dictionary.
+        """
+        data = EditNokoProjectParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"projects/{project_id}", post_args=data, http_method="PUT"
+        )
+
+    def merge_project_into_this_project(
+        self, project_id: str | int, project_to_merge_id: str | int
+    ) -> None:
+        """Merge a project into another one.
+
+        When one project is merged into another, the entries, expenses and invoices associated with the project are
+        associated with the new tag, and the merged project will be deleted once the merge has completed. This action
+        is permanent, so you cannot undo after you merge projects. A merge cannot be performed if either project is
+        archived.
+
+        Args:
+            project_id (str | int): The ID of the project to keep. This is the project the other project will
+                be merged into.
+            project_to_merge_id (str | int): The ID of the project to merge. This is the project that will be merged
+            into the other one.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        self.fetch_json(
+            f"projects/{project_id}/merge",
+            post_args={"project_id": project_to_merge_id},
+            http_method="PUT",
+        )
+
+    def delete_single_project(self, project_id: str | int) -> None:
+        """Delete a single project.
+
+        A project cannot be deleted if there are entries, invoices or expenses associated with it. Consider
+        archiving the project instead.
+
+        Args:
+            project_id (str | int): The ID of the project to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        self.fetch_json(f"projects/{project_id}", http_method="DELETE")
+
+    def archive_single_project(self, project_id: str | int) -> None:
+        """Archive a single project.
+
+        A project cannot be deleted if there are no entries, invoices or expenses associated with it. Consider
+        deleting the project instead.
+
+        Args:
+            project_id (str | int): The ID of the project to archive.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        self.fetch_json(f"projects/{project_id}/archive", http_method="PUT")
+
+    def unarchive_single_project(self, project_id: str | int) -> None:
+        """Unarchive a single project.
+
+        Turn an archived project active.
+
+        Args:
+            project_id (str | int): The ID of the archived project to unarchive.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        self.fetch_json(f"projects/{project_id}/unarchive", http_method="PUT")
+
+    def archive_projects(self, project_ids: list[int | str]) -> None:
+        """Archive multiple projects.
+
+        If any projects in the list cannot be archived, they will be ignored and will not affect the response.
+
+        Args:
+            project_ids (list[str | int]): The list of IDs of the projects to archive.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        post_args = {"project_ids": list_to_list_of_integers(project_ids)}
+        self.fetch_json("projects/archive", post_args=post_args, http_method="PUT")
+
+    def unarchive_projects(self, project_ids: list[int | str]) -> None:
+        """Unarchive multiple projects.
+
+        If any projects in the list cannot be unarchived, they will be ignored and will not affect the response.
+
+        Args:
+            project_ids (list[str | int]): The list of IDs of the projects to unarchive.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        post_args = {"project_ids": list_to_list_of_integers(project_ids)}
+        self.fetch_json("projects/unarchive", post_args=post_args, http_method="PUT")
+
+    def delete_projects(self, project_ids: list[int | str]) -> None:
+        """Delete multiple projects.
+
+        If any projects in the list cannot be deleted, they will be ignored and will not affect the response.
+
+        Args:
+            project_ids (list[str | int]): The list of IDs of the projects to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, will raise an exception.
+        """
+        post_args = {"project_ids": list_to_list_of_integers(project_ids)}
+        self.fetch_json("projects/delete", post_args=post_args, http_method="PUT")
