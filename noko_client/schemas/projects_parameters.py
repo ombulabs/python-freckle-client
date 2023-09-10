@@ -8,70 +8,50 @@ from pydantic import BaseModel, field_validator
 from noko_client.schemas.utilities import boolean_as_lower_string, list_to_string
 
 
-class CreateNokoProjectParameters(BaseModel):
+class ProjectBase(BaseModel):
+    """Base model for project create and edit schema."""
+
+    name: str | None = None
+    project_group_id: str | int | None = None
+    billing_increment: int | None = None
+    color: str | None = None
+
+    @field_validator("project_group_id")
+    def format_ids(cls, value: str | int | None) -> int | None:
+        """Turn IDs provided as strings into integers."""
+        return int(value) if isinstance(value, str) else value
+
+    @field_validator("billing_increment")
+    def validate_billing_increment(cls, value: int | None) -> int | None:
+        """Validate billing increment, if provided, is an accepted value."""
+        valid_billing_increment = (1, 5, 6, 10, 15, 20, 30, 60)
+        if isinstance(value, int):
+            assert value in valid_billing_increment
+        return value
+
+    def model_dump(self, **kwargs) -> dict:
+        """Override the `model_dump` method.
+
+        Remove None values from the dictionary.
+        """
+        data = super().model_dump(**kwargs)
+        return {key: value for key, value in data.items() if value is not None}
+
+
+class CreateNokoProjectParameters(ProjectBase):
     """Process and validate parameters to make POST requests to the `projects` endpoint."""
 
     name: str
     billable: str | bool | None = None
-    project_group_id: str | int | None = None
-    billing_increment: int | None
-    color: str | None
 
     @field_validator("billable")
     def format_booleans(cls, value: bool | str | None) -> str | None:
         """Format boolean parameters into the respective lower case string expected by Noko."""
         return boolean_as_lower_string(value)
 
-    @field_validator("project_group_id")
-    def format_ids(cls, value: str | int | None) -> int | None:
-        """Turn IDs provided as strings into integers."""
-        return int(value) if isinstance(value, str) else value
 
-    @field_validator("billing_increment")
-    def validate_billing_increment(cls, value: int | None) -> int | None:
-        """Validate billing increment, if provided, is an accepted value."""
-        valid_billing_increment = (1, 5, 6, 10, 15, 20, 30, 60)
-        if isinstance(value, int):
-            assert value in valid_billing_increment
-        return value
-
-    def model_dump(self, **kwargs) -> dict:
-        """Override the `model_dump` method.
-
-        Remove None values from the dictionary.
-        """
-        data = super().model_dump(**kwargs)
-        return {key: value for key, value in data.items() if value is not None}
-
-
-class EditNokoProjectParameters(BaseModel):
+class EditNokoProjectParameters(ProjectBase):
     """Process and validate parameters to make PUT requests to the `projects` endpoint."""
-
-    name: str | None = None
-    project_group_id: str | int | None = None
-    billing_increment: int | None
-    color: str | None
-
-    @field_validator("project_group_id")
-    def format_ids(cls, value: str | int | None) -> int | None:
-        """Turn IDs provided as strings into integers."""
-        return int(value) if isinstance(value, str) else value
-
-    @field_validator("billing_increment")
-    def validate_billing_increment(cls, value: int | None) -> int | None:
-        """Validate billing increment, if provided, is an accepted value."""
-        valid_billing_increment = (1, 5, 6, 10, 15, 20, 30, 60)
-        if isinstance(value, int):
-            assert value in valid_billing_increment
-        return value
-
-    def model_dump(self, **kwargs) -> dict:
-        """Override the `model_dump` method.
-
-        Remove None values from the dictionary.
-        """
-        data = super().model_dump(**kwargs)
-        return {key: value for key, value in data.items() if value is not None}
 
 
 class GetNokoProjectsParameters(BaseModel):

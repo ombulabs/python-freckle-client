@@ -3,6 +3,7 @@
 Pydantic schemas to process and validate parameters before making requests to the `entries` endpoint of the Noko API.
 """
 # pylint: disable=no-self-argument
+# mypy: disable-error-code=assignment
 from datetime import datetime
 
 from dateutil.parser import parse
@@ -28,7 +29,7 @@ class CreateNokoEntryParameters(BaseModel):
     source_url: str | None = None
 
     @field_validator("date")
-    def format_date(cls, value: str | datetime | None) -> str | None:
+    def format_date(cls, value: str | datetime) -> str:
         """If date provided as datetime, convert to string. If provided as string, validate for ISO 8601."""
         if isinstance(value, str):
             assert datetime.strptime(value, "%Y-%m-%d")
@@ -48,16 +49,12 @@ class CreateNokoEntryParameters(BaseModel):
         return {key: value for key, value in data.items() if value is not None}
 
 
-class EditNokoEntryParameters(BaseModel):
+class EditNokoEntryParameters(CreateNokoEntryParameters):
     """Process and validate parameters to make PUT requests to the `entries/:id` endpoint."""
 
     date: str | datetime | None = None
     user_id: str | int | None = None
     minutes: int | None = None
-    description: str | None = None
-    project_id: str | int | None = None
-    project_name: str | None = None
-    source_url: str | None = None
 
     @field_validator("date")
     def format_date(cls, value: str | datetime | None) -> str | None:
@@ -65,19 +62,6 @@ class EditNokoEntryParameters(BaseModel):
         if isinstance(value, str):
             assert datetime.strptime(value, "%Y-%m-%d")
         return date_to_string(value) if isinstance(value, datetime) else value
-
-    @field_validator("user_id", "project_id")
-    def format_ids(cls, value: str | int | None) -> int | None:
-        """Turn IDs provided as strings into integers."""
-        return int(value) if isinstance(value, str) else value
-
-    def model_dump(self, **kwargs) -> dict:
-        """Override the `model_dump` method.
-
-        Remove None values from the dictionary.
-        """
-        data = super().model_dump(**kwargs)
-        return {key: value for key, value in data.items() if value is not None}
 
 
 class GetNokoEntriesParameters(BaseModel):

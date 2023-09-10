@@ -6,16 +6,20 @@ is expected by Noko.
 References
     Noko's full API documentation can be found at https://developer.nokotime.com/v2
 """
+# mypy: disable-error-code=return-value
 from datetime import datetime
 
 from noko_client.base_client import BaseClient
 from noko_client.schemas import (
     CreateNokoEntryParameters,
+    CreateNokoInvoiceParameters,
     CreateNokoProjectGroupsParameters,
     CreateNokoProjectParameters,
     EditNokoEntryParameters,
+    EditNokoInvoiceParameters,
     EditNokoProjectParameters,
     GetNokoEntriesParameters,
+    GetNokoInvoicesParameters,
     GetNokoProjectGroupsParameters,
     GetNokoProjectsParameters,
     GetNokoTagsParameters,
@@ -42,7 +46,7 @@ class NokoClient(BaseClient):
 
     # Entry related methods
 
-    def list_entries(self, **kwargs: dict) -> list[dict] | None:
+    def list_entries(self, **kwargs: dict) -> list[dict]:
         """List all entries.
 
         By default, retrieves all entries. The entries to retrieve can be filtered based on accepted Keyword Arguments.
@@ -79,7 +83,7 @@ class NokoClient(BaseClient):
         params = GetNokoEntriesParameters(**kwargs).model_dump()
         return self.fetch_json("entries", http_method="GET", query_params=params)
 
-    def get_single_entry(self, entry_id: str | int) -> list[dict] | None:
+    def get_single_entry(self, entry_id: str | int) -> list[dict]:
         """Retrieve a single entry based on the entry ID.
 
         Args:
@@ -90,7 +94,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"entries/{entry_id}", http_method="GET")
 
-    def create_entry(self, **kwargs: dict) -> list[dict] | None:
+    def create_entry(self, **kwargs: dict) -> list[dict]:
         """Create new entry in Noko.
 
         Keyword Args:
@@ -114,7 +118,7 @@ class NokoClient(BaseClient):
         data = CreateNokoEntryParameters(**kwargs).model_dump()
         return self.fetch_json("entries", post_args=data, http_method="POST")
 
-    def edit_entry(self, entry_id: int | str, **kwargs: dict) -> list[dict] | None:
+    def edit_entry(self, entry_id: int | str, **kwargs: dict) -> list[dict]:
         """Edit an existing entry.
 
         Args:
@@ -239,7 +243,7 @@ class NokoClient(BaseClient):
 
     # Tag related methods
 
-    def list_tags(self, **kwargs: dict) -> list[dict] | None:
+    def list_tags(self, **kwargs: dict) -> list[dict]:
         """List all tags.
 
         By default, retrieves all tags. The tags to retrieve can be filtered based on accepted Keyword Arguments.
@@ -254,7 +258,7 @@ class NokoClient(BaseClient):
         params = GetNokoTagsParameters(**kwargs).model_dump()
         return self.fetch_json("tags", query_params=params, http_method="GET")
 
-    def create_tags(self, names: list[str]) -> list[dict] | None:
+    def create_tags(self, names: list[str]) -> list[dict]:
         """Create new Noko tags.
 
         If any one tag cannot be created for any reason, it will be ignored and will not affect the response.
@@ -268,7 +272,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json("tags", post_args={"names": names}, http_method="POST")
 
-    def get_single_tag(self, tag_id: int | str) -> list[dict] | None:
+    def get_single_tag(self, tag_id: int | str) -> list[dict]:
         """Retrieve a single tag based on the tag ID.
 
         Args:
@@ -279,9 +283,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"tags/{tag_id}", http_method="GET")
 
-    def get_all_entries_for_tag(
-        self, tag_id: str | int, **kwargs: dict
-    ) -> list[dict] | None:
+    def get_all_entries_for_tag(self, tag_id: str | int, **kwargs: dict) -> list[dict]:
         """Retrieve all time entries associated with a tag.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -324,7 +326,7 @@ class NokoClient(BaseClient):
             f"tags/{tag_id}/entries", query_params=params, http_method="GET"
         )
 
-    def edit_tag(self, tag_id: str | int, name: str) -> list[dict] | None:
+    def edit_tag(self, tag_id: str | int, name: str) -> list[dict]:
         """Edit a single tag based on the tag ID.
 
         Args:
@@ -397,7 +399,7 @@ class NokoClient(BaseClient):
 
     # Project related methods
 
-    def list_projects(self, **kwargs: dict) -> list[dict] | None:
+    def list_projects(self, **kwargs: dict) -> list[dict]:
         """List all projects from Noko.
 
         By default, retrieves all projects. Projects to retrieve can be filtered based on accepted Keyword Arguments.
@@ -417,7 +419,7 @@ class NokoClient(BaseClient):
         params = GetNokoProjectsParameters(**kwargs).model_dump()
         return self.fetch_json("projects", query_params=params, http_method="GET")
 
-    def get_single_project(self, project_id: str | int) -> list[dict] | None:
+    def get_single_project(self, project_id: str | int) -> list[dict]:
         """Retrieve a single project based on the project ID.
 
         Args:
@@ -428,7 +430,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"projects/{project_id}", http_method="GET")
 
-    def create_project(self, **kwargs: dict) -> list[dict] | None:
+    def create_project(self, **kwargs: dict) -> list[dict]:
         """Create new project in Noko.
 
         Keyword Args:
@@ -449,7 +451,7 @@ class NokoClient(BaseClient):
 
     def get_all_entries_for_project(
         self, project_id: str | int, **kwargs: dict
-    ) -> list[dict] | None:
+    ) -> list[dict]:
         """Retrieve all time entries associated with a project.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -496,7 +498,7 @@ class NokoClient(BaseClient):
         """Retrieve expenses associated with a project."""
         raise NotImplementedError("Uh oh! This method has not been implemented yet.")
 
-    def edit_project(self, project_id: str | int, **kwargs: dict) -> list[dict] | None:
+    def edit_project(self, project_id: str | int, **kwargs: dict) -> list[dict]:
         """Edit an existing project.
 
         Args:
@@ -626,7 +628,7 @@ class NokoClient(BaseClient):
 
     # Project group related methods
 
-    def list_project_groups(self, **kwargs: dict) -> list[dict] | None:
+    def list_project_groups(self, **kwargs: dict) -> list[dict]:
         """List all project groups from Noko.
 
         Keyword Args:
@@ -640,7 +642,7 @@ class NokoClient(BaseClient):
         params = GetNokoProjectGroupsParameters(**kwargs).model_dump()
         return self.fetch_json("project_groups", query_params=params, http_method="GET")
 
-    def create_project_group(self, **kwargs: dict) -> list[dict] | None:
+    def create_project_group(self, **kwargs: dict) -> list[dict]:
         """Create a new project group.
 
         Keyword Args:
@@ -656,9 +658,7 @@ class NokoClient(BaseClient):
             "project_groups", query_params=params, http_method="POST"
         )
 
-    def get_single_project_group(
-        self, project_group_id: str | int
-    ) -> list[dict] | None:
+    def get_single_project_group(self, project_group_id: str | int) -> list[dict]:
         """Retrieve a single project group.
 
         Args:
@@ -669,9 +669,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"project_groups/{project_group_id}", http_method="GET")
 
-    def edit_project_group(
-        self, project_group_id: str | int, name: str
-    ) -> list[dict] | None:
+    def edit_project_group(self, project_group_id: str | int, name: str) -> list[dict]:
         """Edit a project group.
 
         Args:
@@ -688,7 +686,7 @@ class NokoClient(BaseClient):
 
     def get_all_entries_for_project_in_project_group(
         self, project_group_id: str | int, **kwargs: dict
-    ) -> list[dict] | None:
+    ) -> list[dict]:
         """Retrieve all time entries associated with the projects in a project group.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -735,7 +733,7 @@ class NokoClient(BaseClient):
 
     def get_all_projects_in_project_group(
         self, project_group_id: str | int, **kwargs: dict
-    ) -> list[dict] | None:
+    ) -> list[dict]:
         """Retrieve all projects in a project group.
 
         Results can be filtered using the same keyword arguments as the ones used for the list projects endpoint.
@@ -765,7 +763,7 @@ class NokoClient(BaseClient):
 
     def add_projects_to_group(
         self, project_group_id: str | int, project_ids: str | list[str | int]
-    ) -> list[dict] | None:
+    ) -> list[dict]:
         """Add projects to a project group.
 
         Args:
@@ -832,3 +830,414 @@ class NokoClient(BaseClient):
             (None): Does not return anything, if unsuccessful, raises an exception.
         """
         self.fetch_json(f"project_groups/{project_group_id}", http_method="DELETE")
+
+    # Invoice related methods
+
+    def list_invoices(self, **kwargs: dict) -> list[dict]:
+        """List Noko invoices.
+
+        Keyword Args:
+            state (str | None): Only invoices in this state will be returned. Defaults to None.
+                Accepted Values are: unpaid, awaiting_payment, in_progress, paid, none
+            reference (str | None): Only invoices with this text in their invoice reference will be returned.
+                Defaults to None.
+            invoice_date_from (str | datetime | None): Only invoices dated from this day forward will be returned.
+                If provided as string, must be in ISO 8061 format (YYYY-MM-DD). Defaults to None.
+            invoice_date_to (str | datetime | None): Only invoices dated up to this day will be returned.
+                If provided as string, must be in ISO 8061 format (YYYY-MM-DD). Defaults to None.
+            project_name (str | None): Only invoices containing this text in their project_name field will be returned.
+                Defaults to None.
+            total_amount_from (int | float | None): Only invoices with a total amount due greater than or equal to
+                this will be returned. Defaults to None.
+            total_amount_to (int | float | None): Only invoices with a total amount due less than or equal to
+                this will be returned. Defaults to None.
+            recipient_details (str | None): Only invoices containing this text in their recipient_details field
+                will be returned. Defaults to None.
+            project_ids (str | list[int | str] | None): Only invoices containing these projects will be returned.
+                If provided as a string, must be a comma separated string. Defaults to None.
+            company_name (str | None): Only invoices containing this text in their company_name field are returned.
+                Defaults to None.
+            company_details (str | None): Only invoices containing this text in their company_details field
+                are returned. Defaults to None.
+            description (str | None): Only invoices containing this text in their description field are returned.
+                Defaults to None.
+            footer (str | None): Only invoices containing this text in their footer field are returned.
+                Defaults to None.
+            has_online_payment_details (str | bool | None): Whether to only return invoices that have or don't have
+                online payment details. Defaults to None.
+            has_custom_html (str | bool | None): Whether to only return invoices that include or don't include
+                custom HTML. Defaults to None.
+            show_hours_worked (str | bool | None): Whether to only return invoices that show or don't show hours worked.
+                Defaults to None.
+            show_full_report (str | bool | None): Whether to only return invoices that show or don't show the full
+                report for the invoice. Defaults to None.
+            show_user_summaries (str | bool | None): Whether to only return invoices that show or don't show the
+                summary of hours worked for each team member. Defaults to None.
+            show_project_summaries (str | bool | None): Whether to only return invoices that show or don't show the
+                summary of hours worked for each project. Defaults to None.
+            show_project_name_for_expenses (str | bool | None): Whether to only return invoices that show or don't
+                show the expense's project name next to the expense description. Defaults to None.
+            locale (str | None): Only invoices using the specified locally are returned. Accepted values are any of
+                the locale codes supported by Noko. Defaults to None.
+            currency_code (str | None): Only invoices using this currency are returned. Accepted values are any of
+                the ISO currency codes support by Noko. Defaults to None.
+            currency_symbol (str | None): Only invoices with this text as part of their currency_symbol are returned.
+                Defaults to None.
+            rate_calculation (str | None): Only invoices with the rate for the hours calculated in this manner are
+                returned. Defaults to None.
+                Accepted values: custom_hourly_rates, standard_hourly_rate, flat_rate
+            updated_from (str | datetime | None): Only invoices updated from or after this timestamp will be returned.
+                Defaults to None.
+            updated_to (str | datetime | None): Only invoices updated on or before this timestamp will be returned.
+                Defaults to None.
+
+        Noko Invoice Locales: https://developer.nokotime.com/invoice_locales/#locales
+
+        Returns:
+            (list[dict]): All invoices matching the criteria as a list of dictionaries.
+        """
+        params = GetNokoInvoicesParameters(**kwargs).model_dump()
+        return self.fetch_json("invoices", query_params=params, http_method="GET")
+
+    def get_single_invoice(self, invoice_id: str | int) -> list[dict]:
+        """Retrieve a single invoice from Noko.
+
+        Args:
+            invoice_id (str | int): The ID of the invoice to retrieve.
+
+        Returns:
+            (list[dict]): The invoice retrieved as a dictionary.
+        """
+        return self.fetch_json(f"invoices/{invoice_id}", http_method="GET")
+
+    def create_invoice(self, **kwargs: dict) -> list[dict]:
+        """Create a new invoice in Noko.
+
+        For additional information on options available for rate_calculation, taxes and customisation, refer to the
+        Noko API documentation: https://developer.nokotime.com/v2/invoices/#create-an-invoice
+
+        Keyword Args:
+            invoice_date (str | datetime): The date the invoice was issued. If provided as a string, must be
+                provided in ISO 8601 format (YYYY-MM-DD).
+            reference (str | None): The invoice's reference identifier. If no value is provided, a value will be
+                generated based on previous invoices as a default.
+            project_name (str | None): The name of the project involved in this invoice. Defaults to None.
+            company_name (str | None): The name of the company issuing the invoice. Defaults to None.
+            company_details (str | None): The mailing address and any additional relevant information for the
+                company issuing the invoice. Defaults to None.
+            recipient_details (str | None): The mailing address and any additional relevant information for the
+                recipient of the invoice. Defaults to None.
+            description (str | None): A description of the invoice. Supports a limited version of Markdown.
+                Noko documentation: https://help.nokotime.com/article/84-customizing-invoice-labels-and-formatting
+            footer (str | None): The footer for each page of the invoice. Supports a limited version of Markdown.
+                Noko documentation: https://help.nokotime.com/article/84-customizing-invoice-labels-and-formatting
+            show_hours_worked (bool | str): Whether to show the hours worked when viewing the invoice.
+                Defaults to True.
+            show_full_report (bool | str): Whether to show the full report when viewing the invoice.
+                Defaults to False.
+            show_user_summaries (bool | str): Whether to show the total time in minutes worked by each team member.
+                Defaults to False.
+            show_project_summaries (bool | str): Whether to show the total time in minutes worked on each project.
+                Defaults to False.
+            show_project_name_for_expenses (bool | str): Whether to show the expense's project name next to its
+                description on the invoice. Defaults to False.
+            rate_calculation (dict | None): How to calculate the total amount of hours worked to generate the invoice.
+                Dictionary keys are: calculation_method (required), flat_rate (required if calculation_method is
+                flat_rate), standard_hourly_rate (required if calculation_method is standard_hourly_rate or
+                custom_hourly_rate), custom_hourly_rates (required if calculation_method is custom_hourly_rate).
+                Defaults to None.
+            entry_ids (list | None): List of entries to include in the invoice. Can be a list of strings or integers.
+                Defaults to None.
+            expense_ids (list | None): List of expenses to include in the invoice. Can be a list of strings or integers.
+                Defaults to None.
+            taxes (list[dict] | None): The taxes to apply to this invoice, as a list of dictionaries.
+                Dictionary fields: percentage (required), name (optional)
+            customization (dict | None): Dictionary of customization options that define the labels and localization
+                settings for the invoice. Reference: https://developer.nokotime.com/v2/invoices/#create-an-invoice
+
+        Returns:
+            (list[dict]): The created invoice as a dictionary.
+        """
+        data = CreateNokoInvoiceParameters(**kwargs).model_dump()
+        return self.fetch_json("invoices", post_args=data, http_method="POST")
+
+    def edit_invoice(self, invoice_id: str | int, **kwargs: dict) -> list[dict]:
+        """Edit a Noko invoice.
+
+        Args:
+            invoice_id (str | int): The ID of the invoice to edit.
+
+        Keyword Args:
+            invoice_date (str | datetime): The date the invoice was issued. If provided as a string, must be
+                provided in ISO 8601 format (YYYY-MM-DD).
+            reference (str | None): The invoice's reference identifier. If no value is provided, a value will be
+                generated based on previous invoices as a default.
+            project_name (str | None): The name of the project involved in this invoice. Defaults to None.
+            company_name (str | None): The name of the company issuing the invoice. Defaults to None.
+            company_details (str | None): The mailing address and any additional relevant information for the
+                company issuing the invoice. Defaults to None.
+            recipient_details (str | None): The mailing address and any additional relevant information for the
+                recipient of the invoice. Defaults to None.
+            description (str | None): A description of the invoice. Supports a limited version of Markdown.
+                Noko documentation: https://help.nokotime.com/article/84-customizing-invoice-labels-and-formatting
+            footer (str | None): The footer for each page of the invoice. Supports a limited version of Markdown.
+                Noko documentation: https://help.nokotime.com/article/84-customizing-invoice-labels-and-formatting
+            show_hours_worked (bool | str): Whether to show the hours worked when viewing the invoice.
+                Defaults to True.
+            show_full_report (bool | str): Whether to show the full report when viewing the invoice.
+                Defaults to False.
+            show_user_summaries (bool | str): Whether to show the total time in minutes worked by each team member.
+                Defaults to False.
+            show_project_summaries (bool | str): Whether to show the total time in minutes worked on each project.
+                Defaults to False.
+            show_project_name_for_expenses (bool | str): Whether to show the expense's project name next to its
+                description on the invoice. Defaults to False.
+            rate_calculation (dict | None): How to calculate the total amount of hours worked to generate the invoice.
+                Dictionary keys are: calculation_method (required), flat_rate (required if calculation_method is
+                flat_rate), standard_hourly_rate (required if calculation_method is standard_hourly_rate or
+                custom_hourly_rate), custom_hourly_rates (required if calculation_method is custom_hourly_rate).
+                Defaults to None.
+            entry_ids (list | None): List of entries to include in the invoice. Can be a list of strings or integers.
+                Defaults to None.
+            expense_ids (list | None): List of expenses to include in the invoice. Can be a list of strings or integers.
+                Defaults to None.
+            taxes (list[dict] | None): The taxes to apply to this invoice, as a list of dictionaries.
+                Dictionary fields: percentage (required), name (optional)
+            customization (dict | None): Dictionary of customization options that define the labels and localization
+                settings for the invoice. Reference: https://developer.nokotime.com/v2/invoices/#create-an-invoice
+
+        Returns:
+            (list[dict]): The edited invoice as a dictionary.
+        """
+        data = EditNokoInvoiceParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"invoices/{invoice_id}", post_args=data, http_method="PUT"
+        )
+
+    def mark_invoice_as_paid(self, invoice_id: str | int) -> None:
+        """Mark an invoice as paid.
+
+        Args:
+            invoice_id (str | int): The ID of the invoice to mark as paid.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"invoices/{invoice_id}/paid", http_method="PUT")
+
+    def mark_invoice_as_unpaid(self, invoice_id: str | int) -> None:
+        """Mark an invoice as unpaid.
+
+        Args:
+            invoice_id (str | int): The ID of the invoice to mark as unpaid.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"invoices/{invoice_id}/unpaid", http_method="PUT")
+
+    def get_invoice_entries(self, invoice_id: str | int, **kwargs: dict) -> list[dict]:
+        """Retrieve all time entries associated with an invoice.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            invoice_id (str | int): The ID of the invoice to retrieve entries for.
+
+        Keyword Args:
+            user_ids (str | list | None): IDs of users to filter. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            description (str | None): Only descriptions containing the provided text will be returned. Defaults to None.
+            project_ids (str | list | None): IDs of projects to filter for. If provided as a string, must be comma
+                separated. If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_ids (str | list | None): IDs of users to filter for. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_filter_type (str | None): The type of filter to apply if filtering for tag_ids. Defaults to None.
+            from_ (str | datetime | None): The date from which to search. Only entries logged on this day onwards
+                will be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            to (str | datetime | None): The date up to which to search. Only entries logged up to this day will
+                be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            invoiced (bool | str | None): Whether to filter for invoiced or uninvoiced entries. If provided as string,
+                must be lower case. Defaults to None.
+            updated_from (str | datetime | None): Only entries with updates from this timestamp onwards are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            updated_to (str | datetime | None): Only entries with updates up to this timestamp are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            billable (bool | str | None): Whether to filter for billable or unbillable entries. If provided as string,
+                must be lower case. Defaults to None.
+            approved_at_from (str | datetime | None): Only entries with approvals from this date on will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+            approved_at_to (str | datetime | None): Only entries with approvals up to this date will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+
+        Returns:
+            (list[dict]): A list of all retrieved entries meeting the specified criteria.
+        """
+        params = GetNokoEntriesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"invoices/{invoice_id}/entries", query_params=params, http_method="GET"
+        )
+
+    def get_invoice_expenses(self) -> None:
+        """Get invoice expenses."""
+        raise NotImplementedError("Uh oh. This method has not been implemented yet.")
+
+    def add_entries_to_invoice(
+        self, invoice_id: int | str, entry_ids: list[int | str]
+    ) -> None:
+        """Add time entries to an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to add entries to.
+            entry_ids (list[int | str]): A list of the IDs of the entries to add to the invoice.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"entry_ids": list_to_list_of_integers(entry_ids)}
+        self.fetch_json(
+            f"invoices/{invoice_id}/add_entries", post_args=post_args, http_method="PUT"
+        )
+
+    def remove_entries_from_invoice(
+        self, invoice_id: int | str, entry_ids: list[int | str]
+    ) -> None:
+        """Remove time entries from an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to remove entries from.
+            entry_ids (list[int | str]): A list of the IDs of the entries to remove from the invoice. Any entries
+                not associated with the invoice will be ignored and will not affect the response.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"entry_ids": list_to_list_of_integers(entry_ids)}
+        self.fetch_json(
+            f"invoices/{invoice_id}/remove_entries",
+            post_args=post_args,
+            http_method="PUT",
+        )
+
+    def remove_all_entries_from_invoice(self, invoice_id: int | str) -> None:
+        """Remove all time entries from an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to remove all entries from.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"invoices/{invoice_id}/remove_all_entries", http_method="PUT")
+
+    def add_expenses_to_invoice(
+        self, invoice_id: int | str, expense_ids: list[int | str]
+    ) -> None:
+        """Add expenses to an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to add expenses to.
+            expense_ids (list[int | str]): A list of the IDs of the expenses to add to the invoice.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"expense_ids": list_to_list_of_integers(expense_ids)}
+        self.fetch_json(
+            f"invoices/{invoice_id}/add_expenses",
+            post_args=post_args,
+            http_method="PUT",
+        )
+
+    def remove_expenses_from_invoice(
+        self, invoice_id: int | str, expense_ids: list[int | str]
+    ) -> None:
+        """Remove expenses from an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to remove expenses from.
+            expense_ids (list[int | str]): A list of the IDs of the expenses to remove from the invoice. Any expenses
+                not associated with the invoice will be ignored and will not affect the response.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"expense_ids": list_to_list_of_integers(expense_ids)}
+        self.fetch_json(
+            f"invoices/{invoice_id}/remove_expenses",
+            post_args=post_args,
+            http_method="PUT",
+        )
+
+    def remove_all_expenses_from_invoice(self, invoice_id: int | str) -> None:
+        """Remove all expenses from an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to remove all expenses from.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"invoices/{invoice_id}/remove_all_expenses", http_method="PUT")
+
+    def add_taxes_to_invoice(self, invoice_id: int | str, taxes: list[dict]) -> None:
+        """Add taxes to an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to add taxes to.
+            taxes (list[dict]): A list of taxes to add to the invoice. Each tax should be represented as a dictionary
+                with, at least, a `percentage` key and, optionally, a `name` key.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"taxes": taxes}
+        self.fetch_json(
+            f"invoices/{invoice_id}/add_taxes", post_args=post_args, http_method="PUT"
+        )
+
+    def remove_taxes_from_invoice(
+        self, invoice_id: int | str, tax_ids: list[str | int]
+    ) -> None:
+        """Remove taxes from an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to remove taxes from.
+            tax_ids (list[str | int]): The IDs of the taxes to remove from the invoice. Any taxes that are not
+                associated with the invoice will be ignored and will not affect the response.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"tax_ids": list_to_list_of_integers(tax_ids)}
+        self.fetch_json(
+            f"invoices/{invoice_id}/remove_taxes",
+            post_args=post_args,
+            http_method="PUT",
+        )
+
+    def remove_all_taxes_from_invoice(self, invoice_id: int | str) -> None:
+        """Remove all taxes from an invoice.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to remove all taxes from.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"invoices/{invoice_id}/remove_all_taxes", http_method="PUT")
+
+    def delete_invoice(self, invoice_id: int | str) -> None:
+        """Delete an invoice from Noko.
+
+        When the invoice is deleted, the entries and expenses associated with it will be marked as uninvoiced.
+        An invoice cannot be deleted if it has been paid or is locked for payment.
+
+        Args:
+            invoice_id (int | str): The ID of the invoice to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"invoices/{invoice_id}", http_method="DELETE")
