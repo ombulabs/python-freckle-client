@@ -27,7 +27,7 @@ The package offers three different clients:
 To use the `NokoClient`, just import the client, create an instance and call the desired method:
 
 ```python
-from noko_client import NokoClient
+from noko_client.client import NokoClient
 
 client = NokoClient('access_token')
 entries = client.list_entries(from_="2023-08-01", to=datetime(2023, 8, 15))
