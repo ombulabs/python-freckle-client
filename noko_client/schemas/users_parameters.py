@@ -3,6 +3,7 @@
 Pydantic schemas to process and validate parameters before making requests to the `users` endpoint of the Noko API.
 """
 from pydantic import BaseModel, field_validator
+from pydantic_core import ValidationError
 
 VALID_ROLE: tuple = ("supervisor", "leader", "coworker", "contractor")
 VALID_STATE: tuple = ("disabled", "pending", "active", "suspended")
@@ -11,14 +12,14 @@ VALID_STATE: tuple = ("disabled", "pending", "active", "suspended")
 def validate_role(value: str | None) -> str | None:
     """Validate that role is a valid string."""
     if isinstance(value, str) and value not in VALID_ROLE:
-        raise ValueError(f"Role must be one of: {', '.join(VALID_ROLE)}.")
+        raise ValidationError(f"Role must be one of: {', '.join(VALID_ROLE)}.")
     return value
 
 
 def validate_state(value: str | None) -> str | None:
     """Validate that state is a valid string."""
     if isinstance(value, str) and value not in VALID_STATE:
-        raise ValueError(f"State must be one of: {', '.join(VALID_STATE)}.")
+        raise ValidationError(f"State must be one of: {', '.join(VALID_STATE)}.")
     return value
 
 

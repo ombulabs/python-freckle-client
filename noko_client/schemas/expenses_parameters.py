@@ -7,11 +7,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
-from noko_client.schemas.utilities import (
-    boolean_as_lower_string,
-    date_to_string,
-    list_to_string,
-)
+from noko_client.schemas.validators import format_booleans, format_date, format_id_lists
 
 
 class ExpenseBase(BaseModel):
@@ -24,17 +20,9 @@ class ExpenseBase(BaseModel):
     taxable: bool | str | None = None
     description: str | None = None
 
-    @field_validator("date")
-    def format_dates(cls, value: str | datetime | None) -> str | None:
-        """If dates provided as datetime objects, convert to string. If provided as string, validate for ISO 8601."""
-        if isinstance(value, str):
-            assert datetime.strptime(value, "%Y-%m-%d")
-        return date_to_string(value) if isinstance(value, datetime) else value
+    _format_date = field_validator("date")(format_date)
 
-    @field_validator("taxable")
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    _format_booleans = field_validator("taxable")(format_booleans)
 
     def model_dump(self, **kwargs) -> dict:
         """Override the `model_dump` method.
@@ -71,22 +59,13 @@ class GetNokoExpensesParameters(BaseModel):
     taxable: bool | str | None = None
     invoiced: bool | str | None = None
 
-    @field_validator("user_ids", "project_ids", "invoice_ids")
-    def format_id_lists(cls, value: str | list) -> str:
-        """If IDs provided as lists, convert to a comma separated string."""
-        return list_to_string(value) if isinstance(value, list) else value
+    _format_id_lists = field_validator("user_ids", "project_ids", "invoice_ids")(
+        format_id_lists
+    )
 
-    @field_validator("from_", "to")
-    def format_dates(cls, value: str | datetime | None) -> str | None:
-        """If dates provided as datetime objects, convert to string. If provided as string, validate for ISO 8601."""
-        if isinstance(value, str):
-            assert datetime.strptime(value, "%Y-%m-%d")
-        return date_to_string(value) if isinstance(value, datetime) else value
+    _format_date = field_validator("from_", "to")(format_date)
 
-    @field_validator("taxable", "invoiced")
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    _format_booleans = field_validator("taxable", "invoiced")(format_booleans)
 
     def model_dump(self, **kwargs) -> dict:
         """Override the `model_dump` method.

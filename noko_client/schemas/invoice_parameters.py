@@ -6,16 +6,15 @@ Pydantic schemas to process and validate parameters before making requests to th
 # mypy: disable-error-code=assignment
 from datetime import datetime
 
-from dateutil.parser import parse
 from pydantic import BaseModel, field_validator
 from pydantic_core import ValidationError
 
-from noko_client.schemas.utilities import (
-    boolean_as_lower_string,
-    date_to_string,
-    list_to_list_of_integers,
-    list_to_string,
-    timestamp_to_string,
+from noko_client.schemas.validators import (
+    format_booleans,
+    format_date,
+    format_id_lists,
+    format_list_of_integers,
+    format_timestamps,
 )
 
 VALID_RATE_CALCULATION = ("custom_hourly_rates", "standard_hourly_rate", "flat_rate")
@@ -44,23 +43,15 @@ class CreateNokoInvoiceParameters(BaseModel):
     taxes: list[dict] | None = None
     customization: dict | None = None
 
-    @field_validator("invoice_date")
-    def format_dates(cls, value: str | datetime | None) -> str | None:
-        """If dates provided as datetime objects, convert to string. If provided as string, validate for ISO 8601."""
-        if isinstance(value, str):
-            assert datetime.strptime(value, "%Y-%m-%d")
-        return date_to_string(value) if isinstance(value, datetime) else value
+    _format_date = field_validator("invoice_date")(format_date)
 
-    @field_validator(
+    _format_booleans = field_validator(
         "show_hours_worked",
         "show_full_report",
         "show_user_summaries",
         "show_project_summaries",
         "show_project_name_for_expenses",
-    )
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    )(format_booleans)
 
     @field_validator("rate_calculation")
     def validate_rate_calculation(cls, value: dict | None) -> dict | None:
@@ -95,10 +86,9 @@ class CreateNokoInvoiceParameters(BaseModel):
                     )
         return value
 
-    @field_validator("entry_ids", "expense_ids")
-    def format_list_of_integers(cls, value: list | None) -> list | None:
-        """Format a list as a list of integers."""
-        return list_to_list_of_integers(value) if isinstance(value, list) else value
+    _format_list_of_integers = field_validator("entry_ids", "expense_ids")(
+        format_list_of_integers
+    )
 
     @field_validator("taxes")
     def validate_taxes(cls, value: list[dict] | None) -> list[dict] | None:
@@ -161,22 +151,17 @@ class GetNokoInvoicesParameters(BaseModel):
     @field_validator("state")
     def validate_state(cls, value: str) -> str:
         """Validate state is a valid string (one of the accepted values)."""
-        assert value in VALID_STATE
+        if value not in VALID_STATE:
+            raise ValidationError(
+                f"Invalid state. Must be one of {', '.join(VALID_STATE)}"
+            )
         return value
 
-    @field_validator("invoice_date_from", "invoice_date_to")
-    def format_dates(cls, value: str | datetime | None) -> str | None:
-        """If dates provided as datetime objects, convert to string. If provided as string, validate for ISO 8601."""
-        if isinstance(value, str):
-            assert datetime.strptime(value, "%Y-%m-%d")
-        return date_to_string(value) if isinstance(value, datetime) else value
+    _format_date = field_validator("invoice_date_from", "invoice_date_to")(format_date)
 
-    @field_validator("project_ids")
-    def format_id_list(cls, value: str | list | None) -> str | None:
-        """If IDs provided as list, convert to a comma separated string."""
-        return list_to_string(value) if isinstance(value, list) else value
+    _format_id_list = field_validator("project_ids")(format_id_lists)
 
-    @field_validator(
+    _format_booleans = field_validator(
         "has_online_payment_details",
         "has_custom_html",
         "show_hours_worked",
@@ -184,23 +169,20 @@ class GetNokoInvoicesParameters(BaseModel):
         "show_user_summaries",
         "show_project_summaries",
         "show_project_name_for_expenses",
-    )
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    )(format_booleans)
 
     @field_validator("rate_calculation")
     def validate_rate_calculation(cls, value: str | None) -> str | None:
         """Validate that rate calculation is a valid string (it is one of the accepted values)."""
-        assert value in VALID_RATE_CALCULATION
+        if value not in VALID_RATE_CALCULATION:
+            raise ValidationError(
+                f"Invalid rate calculation. Must be one of {', '.join(VALID_RATE_CALCULATION)}"
+            )
         return value
 
-    @field_validator("updated_from", "updated_to")
-    def format_timestamps(cls, value: str | datetime | None) -> str | None:
-        """Format a timestamp into ISO 8601 format."""
-        if isinstance(value, str):
-            value = parse(value.split("Z")[0])
-        return timestamp_to_string(value) if isinstance(value, datetime) else value
+    _format_timestamps = field_validator("updated_from", "updated_to")(
+        format_timestamps
+    )
 
     def model_dump(self, **kwargs) -> dict:
         """Override the `model_dump` method.
