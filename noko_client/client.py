@@ -11,10 +11,12 @@ from datetime import datetime
 from noko_client.base_client import BaseClient
 from noko_client.schemas import (
     CreateNokoEntryParameters,
+    CreateNokoProjectGroupsParameters,
     CreateNokoProjectParameters,
     EditNokoEntryParameters,
     EditNokoProjectParameters,
     GetNokoEntriesParameters,
+    GetNokoProjectGroupsParameters,
     GetNokoProjectsParameters,
     GetNokoTagsParameters,
 )
@@ -393,6 +395,8 @@ class NokoClient(BaseClient):
             "tags/delete", post_args={"tag_ids": tag_ids}, http_method="DELETE"
         )
 
+    # Project related methods
+
     def list_projects(self, **kwargs: dict) -> list[dict] | None:
         """List all projects from Noko.
 
@@ -619,3 +623,212 @@ class NokoClient(BaseClient):
         """
         post_args = {"project_ids": list_to_list_of_integers(project_ids)}
         self.fetch_json("projects/delete", post_args=post_args, http_method="PUT")
+
+    # Project group related methods
+
+    def list_project_groups(self, **kwargs: dict) -> list[dict] | None:
+        """List all project groups from Noko.
+
+        Keyword Args:
+            name (str | None): Only project groups with this string in the name are returned. Defaults to None.
+            project_ids (str | list | None): A list of project IDs to filter by. If provided as a string, must
+                be a comma separated list. Defaults to None.
+
+        Returns:
+            (list[dict] | None): The retrieved Noko project groups as a list of dictionaries.
+        """
+        params = GetNokoProjectGroupsParameters(**kwargs).model_dump()
+        return self.fetch_json("project_groups", query_params=params, http_method="GET")
+
+    def create_project_group(self, **kwargs: dict) -> list[dict] | None:
+        """Create a new project group.
+
+        Keyword Args:
+            name (str): Name of the project group to be created.
+            project_ids (str | list): A list of project IDs to associate with the new project group. A group cannot
+                be created without at least one project associated with it.
+
+        Returns:
+            (list[dict]): The newly created project group as a dictionary.
+        """
+        params = CreateNokoProjectGroupsParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            "project_groups", query_params=params, http_method="POST"
+        )
+
+    def get_single_project_group(
+        self, project_group_id: str | int
+    ) -> list[dict] | None:
+        """Retrieve a single project group.
+
+        Args:
+            project_group_id (str | int): The ID of the project group to retrieve.
+
+        Returns:
+            (list[dict]): The project group retrieved as a dictionary.
+        """
+        return self.fetch_json(f"project_groups/{project_group_id}", http_method="GET")
+
+    def edit_project_group(
+        self, project_group_id: str | int, name: str
+    ) -> list[dict] | None:
+        """Edit a project group.
+
+        Args:
+            project_group_id (str | int): The ID of the project group to edit.
+            name (str): The name to give the project group.
+
+        Returns:
+            (list[dict]): The updated project group as a dictionary.
+        """
+        post_args = {"name": name}
+        return self.fetch_json(
+            f"project_groups/{project_group_id}", post_args=post_args, http_method="PUT"
+        )
+
+    def get_all_entries_for_project_in_project_group(
+        self, project_group_id: str | int, **kwargs: dict
+    ) -> list[dict] | None:
+        """Retrieve all time entries associated with the projects in a project group.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            project_group_id (str | int): The ID of the project group of the projects to retrieve entries for.
+
+        Keyword Args:
+            user_ids (str | list | None): IDs of users to filter. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            description (str | None): Only descriptions containing the provided text will be returned. Defaults to None.
+            project_ids (str | list | None): IDs of projects to filter for. If provided as a string, must be comma
+                separated. If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_ids (str | list | None): IDs of users to filter for. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_filter_type (str | None): The type of filter to apply if filtering for tag_ids. Defaults to None.
+            from_ (str | datetime | None): The date from which to search. Only entries logged on this day onwards
+                will be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            to (str | datetime | None): The date up to which to search. Only entries logged up to this day will
+                be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            invoiced (bool | str | None): Whether to filter for invoiced or uninvoiced entries. If provided as string,
+                must be lower case. Defaults to None.
+            updated_from (str | datetime | None): Only entries with updates from this timestamp onwards are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            updated_to (str | datetime | None): Only entries with updates up to this timestamp are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            billable (bool | str | None): Whether to filter for billable or unbillable entries. If provided as string,
+                must be lower case. Defaults to None.
+            approved_at_from (str | datetime | None): Only entries with approvals from this date on will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+            approved_at_to (str | datetime | None): Only entries with approvals up to this date will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+
+        Returns:
+            (list[dict]): A list of all retrieved entries meeting the specified criteria.
+        """
+        params = GetNokoEntriesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"project_groups/{project_group_id}/entries",
+            query_params=params,
+            http_method="GET",
+        )
+
+    def get_all_projects_in_project_group(
+        self, project_group_id: str | int, **kwargs: dict
+    ) -> list[dict] | None:
+        """Retrieve all projects in a project group.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list projects endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            project_group_id (str | int): The ID of the project group of the projects to retrieve.
+
+        Keyword Args:
+            name (str | None): Only projects containing this string in the name are returned. Defaults to None.
+            project_group_ids (str | list | None): Only projects belonging to the group IDs provided are returned.
+                Accepts a comma separated string of IDs or a list of IDs. Defaults to None.
+            billing_increment (int | None): Only projects with the specified billing increment are returned.
+                Accepted values: 1, 5, 6, 10, 15, 20, 30, 60. Defaults to None.
+            enabled (bool | None): Return only active or inactive projects. Defaults to None.
+            billable (bool | None): Return only billable or unbillable projects. Defaults to None.
+
+        Returns:
+            (list[dict]): A list of all retrieved projects meeting the specified criteria.
+        """
+        params = GetNokoProjectsParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"project_groups/{project_group_id}/projects",
+            query_params=params,
+            http_method="GET",
+        )
+
+    def add_projects_to_group(
+        self, project_group_id: str | int, project_ids: str | list[str | int]
+    ) -> list[dict] | None:
+        """Add projects to a project group.
+
+        Args:
+            project_group_id (str | int): The ID of the project group to add projects to.
+            project_ids (str | list[str | int]): A list of IDs of projects to add to the project group. If provided
+                as a list, must be a comma separated list.
+
+        Returns:
+            (list[dict]): A list of the projects added to the group.
+        """
+        if isinstance(project_ids, list):
+            project_ids = list_to_list_of_integers(project_ids)
+        post_args = {"project_ids": project_ids}
+        return self.fetch_json(
+            f"project_groups/{project_group_id}/add_projects",
+            post_args=post_args,
+            http_method="POST",
+        )
+
+    def remove_projects_from_group(
+        self, project_group_id: str | int, project_ids: str | list[str | int]
+    ) -> None:
+        """Remove projects from a project group.
+
+        Args:
+            project_group_id (str | int): The ID of the project group to remove projects from.
+            project_ids (str | list[str | int]): A list of IDs of projects to remove from the project group. If
+                provided as a list, must be a comma separated list.
+
+        Returns:
+            (None): Does not return anything, if unsuccessful, raises an exception.
+        """
+        if isinstance(project_ids, list):
+            project_ids = list_to_list_of_integers(project_ids)
+        post_args = {"project_ids": project_ids}
+        self.fetch_json(
+            f"project_groups/{project_group_id}/remove_projects",
+            post_args=post_args,
+            http_method="PUT",
+        )
+
+    def remove_all_projects_from_group(self, project_group_id: str | int) -> None:
+        """Remove all projects from a project group.
+
+        Args:
+            project_group_id (str | int): The ID of the project group to remove all projects from.
+
+        Returns:
+            (None): Does not return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(
+            f"project_groups/{project_group_id}/remove_all_projects", http_method="PUT"
+        )
+
+    def delete_project_group(self, project_group_id: str | int) -> None:
+        """Delete a project group.
+
+        When a project group is deleted, the projects in it are not deleted, instead, they remain without a group.
+
+        Args:
+            project_group_id (str | int): The ID of the project group to delete.
+
+        Returns:
+            (None): Does not return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"project_groups/{project_group_id}", http_method="DELETE")

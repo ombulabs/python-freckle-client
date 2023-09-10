@@ -5,6 +5,10 @@ from noko_client.schemas.entries_parameters import (
     EditNokoEntryParameters,
     GetNokoEntriesParameters,
 )
+from noko_client.schemas.project_groups_parameters import (
+    CreateNokoProjectGroupsParameters,
+    GetNokoProjectGroupsParameters,
+)
 from noko_client.schemas.projects_parameters import (
     CreateNokoProjectParameters,
     EditNokoProjectParameters,
@@ -14,10 +18,12 @@ from noko_client.schemas.tags_parameters import GetNokoTagsParameters
 
 __all__ = [
     "CreateNokoEntryParameters",
+    "CreateNokoProjectGroupsParameters",
     "CreateNokoProjectParameters",
     "EditNokoEntryParameters",
     "EditNokoProjectParameters",
     "GetNokoEntriesParameters",
+    "GetNokoProjectGroupsParameters",
     "GetNokoProjectsParameters",
     "GetNokoTagsParameters",
 ]
