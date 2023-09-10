@@ -1,3 +1,10 @@
+=== 1.0.0 ===
+
+* Implement new NokoClient for the v2 API
+* Support individual methods for all resource endpoints
+* Support parameter validation on requests
+* Support passing parameters as keyword arguments and as natural types
+
 === 0.5.0 ===
 
 * Handle successful No Content response

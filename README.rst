@@ -1,7 +1,7 @@
-Freckle Client
+Noko Client
 ==============
 
-A super simple Freckle/Noko API client implementation.
+A super simple Noko (formerly Freckle) API client implementation.
 
 Installation
 ------------
@@ -18,9 +18,28 @@ To get the latest commit from GitHub
 
     pip install -e git+git://github.com/bitmazk/python-freckle-client.git#egg=freckle_client
 
+**Note:** Versions 0.5.0 and lower require Python 3.8 while version 1.0 requires Python 3.10.
+
 
 Usage
 -----
+
+There are three different clients made available:
+
+- NokoClient (Noko's v2 API)
+- FreckleClientV2 (Noko's v2 API)
+- FreckleClient (Noko's v1 API) <- Deprecated!
+
+To use the ``NokoClient``, just import the client, create an instance and call the desired method:
+
+.. code-block:: python
+
+    from noko_client import NokoClient
+
+    client = NokoClient('access_token')
+    entries = client.list_entries(from_="2023-08-01", to=datetime(2023, 8, 15))
+
+To use the ``FreckleClient`` of ``FreckleClientV2``:
 
 Just import the client, create an instance and call the ``fetch_json`` method: 
 
@@ -65,7 +84,7 @@ If you want to contribute to this project, please perform the following steps
 
     # Fork this repository
     # Clone your fork
-    mkvirtualenv -p python3.8 freckle-client
+    mkvirtualenv -p python3.10 freckle-client
     make develop
 
     git co -b feature_branch master

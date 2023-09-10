@@ -1,4 +1,4 @@
-name: Freckle Client
+name: Noko Client
 
 on:
   pull_request:
@@ -20,25 +20,18 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Format Black
-        uses: psf/black@stable
-        with:
-          version: "~= 23.0"
-          options: "--check"
+          if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+          else
+          echo "requirements-dev.txt file not found."
+          exit 1
+          fi
+
+      - name: Formatting Black
+        run: black --check .
       - name: Lint Flake8
-        uses: py-actions/flake8@v2
-        with:
-          flake8-version: "6.0.0"
-          ignore: "AZ100,D107,ANN101,ANN204,ANN102,W503"
-          plugins: "flake8-alphabetize flake8-annotations flake8-comments flake8-comprehensions flake8-docstrings flake8-expression-complexity flake8-functions flake8-literal flake8-print flake8-requirements flake8-tidy-imports flake8-use-fstring flake8-unused-arguments flake8-variables-names pep8-naming"
-          args: "--literal-inline-quotes=double --literal-multiline-quotes=double"
-      - name: Analyse pylint
-        run: |
-          pip install pylint==2.16.1
-          pylint $(git ls-files '*.py') --max-args=6 --fail-under=9 --min-public-methods=1
+        run: flake8 .
+      - name: Analyse Pylint
+        run: pylint $(git ls-files '*.py')
       - name: Static Type Check mypy
-        run: |
-          pip install mypy==v0.991
-          python3 -m pip install types-requests
-          mypy $(git ls-files '*.py')
+        run: mypy $(git ls-files '*.py')

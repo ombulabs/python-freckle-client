@@ -33,7 +33,7 @@ import os
 
 from setuptools import find_packages, setup
 
-import freckle_client as app
+import noko_client as app
 
 dev_requires = [
     "black",
@@ -43,9 +43,7 @@ dev_requires = [
     "pylint",
 ]
 
-install_requires = [
-    "requests",
-]
+install_requires = ["requests", "pydantic", "python-dateutil"]
 
 
 def read(fname):
@@ -63,9 +61,9 @@ setup(
     license="The MIT License",
     platforms=["OS Independent"],
     keywords="nokotime, noko, api, client",
-    author="Martin Brochhaus",
-    author_email="mbrochh@gmail.com",
-    url="https://github.com/bitmazk/freckle-client",
+    author="OmbuLabs - The Lean Software Boutique, LLC",
+    author_email="hello@ombulabs.com",
+    url="https://github.com/ABizzinotto/python-freckle-client",
     packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
