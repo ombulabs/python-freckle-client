@@ -43,11 +43,7 @@ dev_requires = [
     "pylint",
 ]
 
-install_requires = [
-    "requests",
-    "pydantic",
-    "python-dateutil"
-]
+install_requires = ["requests", "pydantic", "python-dateutil"]
 
 
 def read(fname):
