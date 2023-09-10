@@ -1,0 +1,21 @@
+/*Button*/
+.btn {
+    border: 2px solid #FCC000;
+    border-radius: 8px !important;
+    box-shadow: None !important;
+}
+.btn-neutral {
+    background-color: #FCC000 !important;
+    color: #000000 !important;
+}
+
+/*Side navigation*/
+.wy-nav-side {
+    background: #282828;
+}
+.wy-menu-vertical p.caption {
+    color: #FCC000;
+}
+.wy-nav-content {
+    max-width: 1000px !important;
+}
