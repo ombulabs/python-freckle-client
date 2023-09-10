@@ -16,6 +16,7 @@ from noko_client.schemas import (
     CreateNokoInvoiceParameters,
     CreateNokoProjectGroupsParameters,
     CreateNokoProjectParameters,
+    CreateNokoTeamParameters,
     CreateNokoUserParameters,
     EditNokoEntryParameters,
     EditNokoExpenseParameters,
@@ -28,11 +29,13 @@ from noko_client.schemas import (
     GetNokoProjectGroupsParameters,
     GetNokoProjectsParameters,
     GetNokoTagsParameters,
+    GetNokoTeamsParameters,
     GetNokoUsersParameters,
 )
 from noko_client.schemas.utilities import (
     date_to_string,
     list_to_list_of_integers,
+    list_to_string,
     timestamp_to_string,
 )
 
@@ -1680,3 +1683,189 @@ class NokoClient(BaseClient):
             (None): Does not return anything, if unsuccessful, will raise an exception.
         """
         self.fetch_json(f"users/{user_id}/deactivate", http_method="PUT")
+
+    # Team related methods
+
+    def list_teams(self, **kwargs: dict) -> list[dict]:
+        """List all teams in Noko.
+
+        Keyword Args:
+            name (str | None): Only teams with this string in the name will be returned. Defaults to None.
+            user_ids (str | list[str | int] | None): List of user IDs to filter teams by. If provided as a string, must be a
+                comma separated string. Defaults to None.
+
+        Returns:
+            (list[dict]): The list of teams in Noko as a list of dictionaries.
+        """
+        params = GetNokoTeamsParameters(**kwargs).model_dump()
+        return self.fetch_json("teams", query_params=params, http_method="GET")
+
+    def get_single_team(self, team_id: str | int) -> list[dict]:
+        """Retrieve a single team from Noko.
+
+        Args:
+            team_id (str | int): The ID of the team to retrieve.
+
+        Returns:
+            (list[dict]): The retrieved team as a dictionary.
+        """
+        return self.fetch_json(f"teams/{team_id}", http_method="GET")
+
+    def create_team(self, **kwargs: dict) -> list[dict]:
+        """Create a new team in Noko.
+
+        Keyword Args:
+            name (str): The name of the team to be created.
+            user_ids (str | list[str | int]: List of users to associate with the team. If provided as a string,
+            must be a comma separated string.
+
+        Returns:
+            (list[dict]): The created team as a dictionary.
+        """
+        data = CreateNokoTeamParameters(**kwargs).model_dump()
+        return self.fetch_json("teams", post_args=data, http_method="POST")
+
+    def edit_team(self, team_id: str | int, name: str) -> list[dict]:
+        """Edit an existing team in Noko.
+
+        Args:
+            team_id (str | int): The ID of the team to edit in Noko.
+            name (str): The name to give the team.
+
+        Returns:
+            (list[dict]): The created team as a dictionary.
+        """
+        post_args = {"name": name}
+        return self.fetch_json(
+            f"teams/{team_id}", post_args=post_args, http_method="PUT"
+        )
+
+    def get_entries_for_users_in_team(
+        self, team_id: str | int, **kwargs: dict
+    ) -> list[dict]:
+        """Get all entries associated with a team.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            team_id (str | int): The ID of the team to retrieve entries for.
+
+        Keyword Args:
+            user_ids (str | list | None): IDs of users to filter. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            description (str | None): Only descriptions containing the provided text will be returned. Defaults to None.
+            project_ids (str | list | None): IDs of projects to filter for. If provided as a string, must be comma
+                separated. If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_ids (str | list | None): IDs of users to filter for. If provided as a string, must be comma separated.
+                If provided as a list, can be provided as a list of integers or strings. Defaults to None.
+            tag_filter_type (str | None): The type of filter to apply if filtering for tag_ids. Defaults to None.
+            from_ (str | datetime | None): The date from which to search. Only entries logged on this day onwards
+                will be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            to (str | datetime | None): The date up to which to search. Only entries logged up to this day will
+                be returned. If provided as string, must be in ISO 8601 format (YYYY-MM-DD).
+            invoiced (bool | str | None): Whether to filter for invoiced or uninvoiced entries. If provided as string,
+                must be lower case. Defaults to None.
+            updated_from (str | datetime | None): Only entries with updates from this timestamp onwards are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            updated_to (str | datetime | None): Only entries with updates up to this timestamp are returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to None.
+            billable (bool | str | None): Whether to filter for billable or unbillable entries. If provided as string,
+                must be lower case. Defaults to None.
+            approved_at_from (str | datetime | None): Only entries with approvals from this date on will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+            approved_at_to (str | datetime | None): Only entries with approvals up to this date will be returned.
+                If provided as string, must be in ISO 8601 format (YYYY-MM-DD). Defaults to None.
+
+        Returns:
+            (list[dict]): A list of all retrieved entries meeting the specified criteria.
+        """
+        data = GetNokoEntriesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"teams/{team_id}/entries", post_args=data, http_method="GET"
+        )
+
+    def get_users_in_team(self, team_id: str | int, **kwargs: dict) -> list[dict]:
+        """Get all users in a team.
+
+        Results can be filtered using the same keyword arguments as the ones used for the users entries endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            team_id (str | int): The ID of the team to retrieve users for.
+
+        Keyword Args:
+            name (str | None): Only users with this string in their name are returned. Defaults to None.
+            email (str | None): Only users with this string in their email address are returned. Defaults to None.
+            role (str | None): Only users with this role will be returned. Defaults to all.
+                Accepted values are: supervisor, leader, coworker, contractor
+            state (str | None): Only users in this state will be returned. Defaults to all.
+                Accepted values are: disabled, pending, active, suspended
+
+        Returns:
+            (list[dict]): A list of all retrieved users meeting the specified criteria.
+        """
+        data = GetNokoUsersParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"teams/{team_id}/users", post_args=data, http_method="GET"
+        )
+
+    def add_users_to_team(
+        self, team_id: str | int, user_ids: str | list[str | int]
+    ) -> list[dict]:
+        """Add users to a team.
+
+        Args:
+            team_id (str | int): The ID of the team to add users to.
+            user_ids (str | list[str | int]): The IDs of the users to add to the team. If provided as string,
+                must be a comma separated string.
+
+        Returns:
+            (list[dict]): A list of all users associated with the team.
+        """
+        post_args = {"user_ids": list_to_string(user_ids)}
+        return self.fetch_json(
+            f"teams/{team_id}/add_users", post_args=post_args, http_method="POST"
+        )
+
+    def remove_users_from_team(
+        self, team_id: str | int, user_ids: str | list[str | int]
+    ) -> None:
+        """Remove users from a team.
+
+        Args:
+            team_id (str | int): The ID of the team to remove users from.
+            user_ids (str | list[str | int]): The IDs of the users to remove from the team. If provided as string,
+                must be a comma separated string.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        post_args = {"user_ids": list_to_string(user_ids)}
+        return self.fetch_json(
+            f"teams/{team_id}/remove_users", post_args=post_args, http_method="PUT"
+        )
+
+    def remove_all_users_from_team(self, team_id: str | int) -> None:
+        """Remove all users from a team.
+
+        Args:
+            team_id (str | int): The ID of the team to remove all users from.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        return self.fetch_json(f"teams/{team_id}/remove_all_users", http_method="PUT")
+
+    def delete_team(self, team_id: str | int) -> None:
+        """Delete a team from Noko.
+
+        Deleting a team will not delete the users in the team.
+
+        Args:
+            team_id (str | int): The ID of the team to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        return self.fetch_json(f"teams/{team_id}", http_method="DELETE")
