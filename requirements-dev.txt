@@ -9,8 +9,26 @@ types-python-dateutil~=2.8.19.14
 black~=23.7.0
 
 #### Linting
-flake8==6.1.0
-pylint==2.17.5
+flake8~=6.1.0
+pylint~=2.17.5
+flake8-pyproject~=1.2.3
+
+#### Flake8 Plugins:
+flake8-alphabetize
+flake8-annotations
+flake8-comments
+flake8-comprehensions
+flake8-docstrings
+flake8-expression-complexity
+flake8-functions
+flake8-literal
+flake8-print
+flake8-requirements
+flake8-tidy-imports
+flake8-use-fstring
+flake8-unused-arguments
+flake8-variables-names
+pep8-naming
 
 ### Formatting
 isort~=5.12.0
