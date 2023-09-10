@@ -7,6 +7,11 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath("../../"))
 
 project = "Python Freckle Client"
 copyright = "2023, OmbuLabs - The Lean Software Boutique, LLC"
@@ -31,7 +36,13 @@ source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
 }
-autodoc_mock_imports = ["requests", "pydantic", "python-dateutil"]
+autodoc_mock_imports = [
+    "requests",
+    "pydantic",
+    "python-dateutil",
+    "dateutil",
+    "pydantic_core",
+]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
