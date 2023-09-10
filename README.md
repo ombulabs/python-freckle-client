@@ -1,7 +1,11 @@
 # Noko Client
 
+[![Documentation Status](https://readthedocs.org/projects/python-freckle-client/badge/?version=latest)](https://python-freckle-client.readthedocs.io/en/latest/?badge=latest)
+
 A simple Noko (formerly Freckle) API client implementation. Offers two different clients with different levels of flexibility
 to interact with the Noko API v2.
+
+Full documentation on the NokoClient can be found [here](https://python-freckle-client.readthedocs.io/en/latest/).
 
 <!-- HIDE_INTRO -->
 ## Installation
