@@ -6,11 +6,20 @@ https://github.com/sarumont/py-trello/blob/master/trello/__init__.py#L108
 
 """
 import json
-from typing import List, Optional
+from typing import Callable, List, Optional
+import warnings
 
 import requests
 
 from . import __version__, exceptions
+
+
+def deprecated(func: Callable) -> Callable:
+    """Decorator to flag a method as deprecated."""
+    def deprecated_func(*args, **kwargs):
+        warnings.warn(f"The FreckleClient is deprecated. Please use the NokoClient or the FreckleClientV2 instead.", category=DeprecationWarning, stacklevel=2)
+        return func(*args, **kwargs)
+    return deprecated_func
 
 
 class FreckleClient:
@@ -27,6 +36,7 @@ class FreckleClient:
         self.account_name = account_name
         self.api_token = api_token
 
+    @deprecated
     def fetch_json(
         self,
         uri_path: str,
