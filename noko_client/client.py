@@ -6,7 +6,7 @@ is expected by Noko.
 References
     Noko's full API documentation can be found at https://developer.nokotime.com/v2
 """
-# mypy: disable-error-code=return-value
+# mypy: disable-error-code="return-value, arg-type"
 from datetime import datetime
 
 from noko_client.base_client import BaseClient
