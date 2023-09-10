@@ -12,13 +12,16 @@ from datetime import datetime
 from noko_client.base_client import BaseClient
 from noko_client.schemas import (
     CreateNokoEntryParameters,
+    CreateNokoExpenseParameters,
     CreateNokoInvoiceParameters,
     CreateNokoProjectGroupsParameters,
     CreateNokoProjectParameters,
     EditNokoEntryParameters,
+    EditNokoExpenseParameters,
     EditNokoInvoiceParameters,
     EditNokoProjectParameters,
     GetNokoEntriesParameters,
+    GetNokoExpensesParameters,
     GetNokoInvoicesParameters,
     GetNokoProjectGroupsParameters,
     GetNokoProjectsParameters,
@@ -494,9 +497,43 @@ class NokoClient(BaseClient):
             f"projects/{project_id}/entries", query_params=params, http_method="GET"
         )
 
-    def get_expenses_for_project(self) -> None:
-        """Retrieve expenses associated with a project."""
-        raise NotImplementedError("Uh oh! This method has not been implemented yet.")
+    def get_expenses_for_project(
+        self, project_id: str | int, **kwargs: dict
+    ) -> list[dict]:
+        """Get all expenses associated with a project.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list expenses endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            project_id (str | int): The ID of the project to retrieve expenses for.
+
+        Keyword Args:
+            user_ids (str | list | None): The IDs of the users to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            description (str | None): Only expenses containing this text in their description are returned.
+            project_ids (str | list | None): The IDs of the projects to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            invoice_ids (str | list | None): The IDs of the invoices to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            from_ (str | datetime | None): Only expenses from or after this date will be returned. If provided as
+                string, must be in ISO 8601 format (YYY-MM-DD). Defaults to None.
+            to (str | datetime | None): Only expenses on or before this date will be returned. If provided as
+                string, must be in ISO 8601 format (YYY-MM-DD). Defaults to None.
+            price_from (int | float | None): Only expenses with a price grater than or equal to this will be returned.
+                Defaults to None.
+            price_to (int | float | None): Only expenses with a price less than or equal to this will be returned.
+                Defaults to None.
+            taxable (bool | str | None): Return only expenses where taxes are applied or not applied. Defaults to both.
+            invoiced (bool | str | None): Return only invoiced or uninvoiced expenses. Defaults to both.
+
+        Returns:
+            (list[dict]): A list of all retrieved expenses meeting the specified criteria.
+        """
+        params = GetNokoExpensesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"projects/{project_id}/expenses", query_params=params, http_method="GET"
+        )
 
     def edit_project(self, project_id: str | int, **kwargs: dict) -> list[dict]:
         """Edit an existing project.
@@ -1079,9 +1116,41 @@ class NokoClient(BaseClient):
             f"invoices/{invoice_id}/entries", query_params=params, http_method="GET"
         )
 
-    def get_invoice_expenses(self) -> None:
-        """Get invoice expenses."""
-        raise NotImplementedError("Uh oh. This method has not been implemented yet.")
+    def get_invoice_expenses(self, invoice_id: str | int, **kwargs: dict) -> list[dict]:
+        """Retrieve all expenses associated with an invoice.
+
+        Results can be filtered using the same keyword arguments as the ones used for the list expenses endpoint.
+        All keyword arguments are optional.
+
+        Args:
+            invoice_id (str | int): The ID of the invoice to retrieve entries for.
+
+        Keyword Args:
+            user_ids (str | list | None): The IDs of the users to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            description (str | None): Only expenses containing this text in their description are returned.
+            project_ids (str | list | None): The IDs of the projects to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            invoice_ids (str | list | None): The IDs of the invoices to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            from_ (str | datetime | None): Only expenses from or after this date will be returned. If provided as
+                string, must be in ISO 8601 format (YYY-MM-DD). Defaults to None.
+            to (str | datetime | None): Only expenses on or before this date will be returned. If provided as
+                string, must be in ISO 8601 format (YYY-MM-DD). Defaults to None.
+            price_from (int | float | None): Only expenses with a price grater than or equal to this will be returned.
+                Defaults to None.
+            price_to (int | float | None): Only expenses with a price less than or equal to this will be returned.
+                Defaults to None.
+            taxable (bool | str | None): Return only expenses where taxes are applied or not applied. Defaults to both.
+            invoiced (bool | str | None): Return only invoiced or uninvoiced expenses. Defaults to both.
+
+        Returns:
+            (list[dict]): A list of all retrieved expenses meeting the specified criteria.
+        """
+        params = GetNokoExpensesParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"invoices/{invoice_id}/expenses", query_params=params, http_method="GET"
+        )
 
     def add_entries_to_invoice(
         self, invoice_id: int | str, entry_ids: list[int | str]
@@ -1241,3 +1310,101 @@ class NokoClient(BaseClient):
             (None): Doesn't return anything, if unsuccessful, raises an exception.
         """
         self.fetch_json(f"invoices/{invoice_id}", http_method="DELETE")
+
+    # Expenses related methods
+
+    def list_expenses(self, **kwargs: dict) -> list[dict]:
+        """List expenses from Noko.
+
+        Keyword Args:
+            user_ids (str | list | None): The IDs of the users to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            description (str | None): Only expenses containing this text in their description are returned.
+            project_ids (str | list | None): The IDs of the projects to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            invoice_ids (str | list | None): The IDs of the invoices to filter expenses by. If provided as string, must
+                be a comma separated string. Defaults to None.
+            from_ (str | datetime | None): Only expenses from or after this date will be returned. If provided as
+                string, must be in ISO 8601 format (YYY-MM-DD). Defaults to None.
+            to (str | datetime | None): Only expenses on or before this date will be returned. If provided as
+                string, must be in ISO 8601 format (YYY-MM-DD). Defaults to None.
+            price_from (int | float | None): Only expenses with a price grater than or equal to this will be returned.
+                Defaults to None.
+            price_to (int | float | None): Only expenses with a price less than or equal to this will be returned.
+                Defaults to None.
+            taxable (bool | str | None): Return only expenses where taxes are applied or not applied. Defaults to both.
+            invoiced (bool | str | None): Return only invoiced or uninvoiced expenses. Defaults to both.
+
+        Returns:
+            (list[dict]): All retrieved expenses as a list of dictionaries.
+        """
+        params = GetNokoExpensesParameters(**kwargs).model_dump()
+        return self.fetch_json("expenses", query_params=params, http_method="GET")
+
+    def get_single_expense(self, expense_id: str | int) -> list[dict]:
+        """Retrieve a single expense from Noko.
+
+        Args:
+            expense_id (str | int): The ID of the expense to retrieve.
+
+        Returns:
+            (list[dict]): The retrieve expense as a dictionary.
+        """
+        return self.fetch_json(f"expenses/{expense_id}", http_method="GET")
+
+    def create_expense(self, **kwargs: dict) -> list[dict]:
+        """Create a new expense in Noko.
+
+        Keyword Args:
+            date (str | datetime): The date of the expense. If provided as string, must be in ISO 8601 format
+                (YYYY-MM-DD).
+            project_id (str | int): The ID of the project to log the expense to.
+            price (int | float): The numeric price of the expense. Must be numeric only, and can be negative. Do not
+                add the currency to this price.
+            user_id (str | int | None): The ID of the user who created the expense. If no value is provided, the
+                authenticated user will be used by default.
+            taxable (bool | str | None): Whether the expense is taxable or not. Defaults to True.
+            description (str | None): The description of the expense. Tags and hashtags will not be parsed.
+                Defaults to None.
+
+        Returns:
+            (list[dict]): The newly created expense as a dictionary.
+        """
+        data = CreateNokoExpenseParameters(**kwargs).model_dump()
+        return self.fetch_json("expenses", post_args=data, http_method="POST")
+
+    def edit_expense(self, expense_id: str | int, **kwargs: dict) -> list[dict]:
+        """Edit an expense in Noko.
+
+        Args:
+            expense_id (str | int): The ID of the expense to edit.
+
+        Keyword Args:
+            date (str | datetime | None): The date of the expense. If provided as string, must be in ISO 8601 format
+                (YYYY-MM-DD). Defaults to None.
+            project_id (str | int): The ID of the project to log the expense to. Defaults to None.
+            price (int | float): The numeric price of the expense. Must be numeric only, and can be negative. Do not
+                add the currency to this price. Defaults to None.
+            user_id (str | int | None): The ID of the user who created the expense. Defaults to None.
+            taxable (bool | str | None): Whether the expense is taxable or not. Defaults to None.
+            description (str | None): The description of the expense. Tags and hashtags will not be parsed.
+                Defaults to None.
+
+        Returns:
+            (list[dict]): The edited expense as a dictionary.
+        """
+        data = EditNokoExpenseParameters(**kwargs).model_dump()
+        return self.fetch_json(
+            f"expenses/{expense_id}", post_args=data, http_method="PUT"
+        )
+
+    def delete_expense(self, expense_id: str | int) -> None:
+        """Delete an expense from Noko.
+
+        Args:
+            expense_id (str | int): The ID of the expense to delete.
+
+        Returns:
+            (None): Doesn't return anything, if unsuccessful, raises an exception.
+        """
+        self.fetch_json(f"expenses/{expense_id}", http_method="DELETE")

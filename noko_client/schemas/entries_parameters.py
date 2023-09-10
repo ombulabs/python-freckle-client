@@ -73,7 +73,7 @@ class GetNokoEntriesParameters(BaseModel):
     tag_ids: str | list | None = None
     tag_filter_type: str | None = None
     from_: str | datetime | None = Field(alias="from", default=None)
-    to: str | datetime | None = Field(default=None)
+    to: str | datetime | None = None
     invoiced: bool | str | None = None
     updated_from: str | datetime | None = None
     updated_to: str | datetime | None = None

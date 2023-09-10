@@ -5,6 +5,11 @@ from noko_client.schemas.entries_parameters import (
     EditNokoEntryParameters,
     GetNokoEntriesParameters,
 )
+from noko_client.schemas.expenses_parameters import (
+    CreateNokoExpenseParameters,
+    EditNokoExpenseParameters,
+    GetNokoExpensesParameters,
+)
 from noko_client.schemas.invoice_parameters import (
     CreateNokoInvoiceParameters,
     EditNokoInvoiceParameters,
@@ -23,13 +28,16 @@ from noko_client.schemas.tags_parameters import GetNokoTagsParameters
 
 __all__ = [
     "CreateNokoEntryParameters",
+    "CreateNokoExpenseParameters",
     "CreateNokoInvoiceParameters",
     "CreateNokoProjectGroupsParameters",
     "CreateNokoProjectParameters",
     "EditNokoEntryParameters",
+    "EditNokoExpenseParameters",
     "EditNokoInvoiceParameters",
     "EditNokoProjectParameters",
     "GetNokoEntriesParameters",
+    "GetNokoExpensesParameters",
     "GetNokoInvoicesParameters",
     "GetNokoProjectGroupsParameters",
     "GetNokoProjectsParameters",
