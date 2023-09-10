@@ -5,7 +5,7 @@ Pydantic schemas to process and validate parameters before making requests to th
 # pylint: disable=no-self-argument
 from pydantic import BaseModel, field_validator
 
-from noko_client.schemas.utilities import boolean_as_lower_string
+from noko_client.schemas.validators import format_booleans
 
 
 class GetNokoTagsParameters(BaseModel):
@@ -14,10 +14,7 @@ class GetNokoTagsParameters(BaseModel):
     name: str | None
     billable: str | bool | None
 
-    @field_validator("billable")
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    _format_booleans = field_validator("billable")(format_booleans)
 
     def model_dump(self, **kwargs) -> dict:
         """Override the `model_dump` method.

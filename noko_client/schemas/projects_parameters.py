@@ -4,10 +4,23 @@ Pydantic schemas to process and validate parameters before making requests to th
 """
 # pylint: disable=no-self-argument
 from pydantic import BaseModel, field_validator
+from pydantic_core import ValidationError
 
-from noko_client.schemas.utilities import boolean_as_lower_string, list_to_string
+from noko_client.schemas.validators import format_booleans, format_id_lists
 
 VALID_BILLING_INCREMENT = (1, 5, 6, 10, 15, 20, 30, 60)
+
+
+def validate_billing_increment(value: int | None) -> int | None:
+    """Validate billing increment, if provided, is an accepted value."""
+    if isinstance(value, int) and value not in VALID_BILLING_INCREMENT:
+        options_string = ", ".join(
+            [str(increment) for increment in VALID_BILLING_INCREMENT]
+        )
+        raise ValidationError(
+            f"Invalid billing increment provided. Must be one of {options_string}"
+        )
+    return value
 
 
 class ProjectBase(BaseModel):
@@ -23,12 +36,9 @@ class ProjectBase(BaseModel):
         """Turn IDs provided as strings into integers."""
         return int(value) if isinstance(value, str) else value
 
-    @field_validator("billing_increment")
-    def validate_billing_increment(cls, value: int | None) -> int | None:
-        """Validate billing increment, if provided, is an accepted value."""
-        if isinstance(value, int):
-            assert value in VALID_BILLING_INCREMENT
-        return value
+    _validate_billing_increment = field_validator("billing_increment")(
+        validate_billing_increment
+    )
 
     def model_dump(self, **kwargs) -> dict:
         """Override the `model_dump` method.
@@ -45,10 +55,7 @@ class CreateNokoProjectParameters(ProjectBase):
     name: str
     billable: str | bool | None = None
 
-    @field_validator("billable")
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    _format_booleans = field_validator("billable")(format_booleans)
 
 
 class EditNokoProjectParameters(ProjectBase):
@@ -64,22 +71,13 @@ class GetNokoProjectsParameters(BaseModel):
     enabled: bool | str | None = None
     billable: bool | str | None = None
 
-    @field_validator("project_group_ids")
-    def format_id_lists(cls, value: str | list) -> str:
-        """If IDs provided as lists, convert to a comma separated string."""
-        return list_to_string(value) if isinstance(value, list) else value
+    _format_id_lists = field_validator("project_group_ids")(format_id_lists)
 
-    @field_validator("billing_increment")
-    def validate_billing_increment(cls, value: int | None) -> int | None:
-        """If dates provided as datetime objects, convert to string. If provided as string, validate for ISO 8601."""
-        if isinstance(value, int):
-            assert value in VALID_BILLING_INCREMENT
-        return value
+    _validate_billing_increment = field_validator("billing_increment")(
+        validate_billing_increment
+    )
 
-    @field_validator("enabled", "billable")
-    def format_booleans(cls, value: bool | str | None) -> str | None:
-        """Format boolean parameters into the respective lower case string expected by Noko."""
-        return boolean_as_lower_string(value)
+    _format_booleans = field_validator("enabled", "billable")(format_booleans)
 
     def model_dump(self, **kwargs) -> dict:
         """Override the custom `model_dump` method.
