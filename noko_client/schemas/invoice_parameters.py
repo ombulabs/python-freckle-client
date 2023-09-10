@@ -18,6 +18,9 @@ from noko_client.schemas.utilities import (
     timestamp_to_string,
 )
 
+VALID_RATE_CALCULATION = ("custom_hourly_rates", "standard_hourly_rate", "flat_rate")
+VALID_STATE = ("unpaid", "awaiting_payment", "in_progress", "paid", "none")
+
 
 class CreateNokoInvoiceParameters(BaseModel):
     """Process and validate parameters to make POST requests to the `invoices` endpoint."""
@@ -66,8 +69,7 @@ class CreateNokoInvoiceParameters(BaseModel):
             return None
 
         calc_method = value.get("calculation_method")
-        accepted_values = ("custom_hourly_rates", "standard_hourly_rate", "flat_rate")
-        if calc_method not in accepted_values:
+        if calc_method not in VALID_RATE_CALCULATION:
             raise ValidationError(
                 "Rate calculation provided with invalid calculation_method."
             )
@@ -159,8 +161,7 @@ class GetNokoInvoicesParameters(BaseModel):
     @field_validator("state")
     def validate_state(cls, value: str) -> str:
         """Validate state is a valid string (one of the accepted values)."""
-        accepted_values = ("unpaid", "awaiting_payment", "in_progress", "paid", "none")
-        assert value in accepted_values
+        assert value in VALID_STATE
         return value
 
     @field_validator("invoice_date_from", "invoice_date_to")
@@ -191,8 +192,7 @@ class GetNokoInvoicesParameters(BaseModel):
     @field_validator("rate_calculation")
     def validate_rate_calculation(cls, value: str | None) -> str | None:
         """Validate that rate calculation is a valid string (it is one of the accepted values)."""
-        accepted_values = ("custom_hourly_rates", "standard_hourly_rate", "flat_rate")
-        assert value in accepted_values
+        assert value in VALID_RATE_CALCULATION
         return value
 
     @field_validator("updated_from", "updated_to")

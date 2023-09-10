@@ -7,6 +7,8 @@ from pydantic import BaseModel, field_validator
 
 from noko_client.schemas.utilities import boolean_as_lower_string, list_to_string
 
+VALID_BILLING_INCREMENT = (1, 5, 6, 10, 15, 20, 30, 60)
+
 
 class ProjectBase(BaseModel):
     """Base model for project create and edit schema."""
@@ -24,9 +26,8 @@ class ProjectBase(BaseModel):
     @field_validator("billing_increment")
     def validate_billing_increment(cls, value: int | None) -> int | None:
         """Validate billing increment, if provided, is an accepted value."""
-        valid_billing_increment = (1, 5, 6, 10, 15, 20, 30, 60)
         if isinstance(value, int):
-            assert value in valid_billing_increment
+            assert value in VALID_BILLING_INCREMENT
         return value
 
     def model_dump(self, **kwargs) -> dict:
@@ -71,9 +72,8 @@ class GetNokoProjectsParameters(BaseModel):
     @field_validator("billing_increment")
     def validate_billing_increment(cls, value: int | None) -> int | None:
         """If dates provided as datetime objects, convert to string. If provided as string, validate for ISO 8601."""
-        valid_billing_increment = (1, 5, 6, 10, 15, 20, 30, 60)
         if isinstance(value, int):
-            assert value in valid_billing_increment
+            assert value in VALID_BILLING_INCREMENT
         return value
 
     @field_validator("enabled", "billable")
