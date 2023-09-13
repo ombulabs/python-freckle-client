@@ -58,6 +58,7 @@ setup(
     version=app.__version__,
     description="A super simple Freckle/Noko API client implementation.",
     long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     license="The MIT License",
     platforms=["OS Independent"],
     keywords="nokotime, noko, api, client, freckle",
