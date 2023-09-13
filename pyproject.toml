@@ -4,6 +4,7 @@ filter_files = true
 
 [tool.flake8]
 exclude = ["venv"]
+# Ignore missing type annotation on **kwargs: ANN003
 # Ignore missing type annotation for self: ANN101
 # Ignore missing type annotation for cls: ANN102
 # Ignore missing type annotation for special methods (i.e. __init__): ANN204
@@ -11,7 +12,7 @@ exclude = ["venv"]
 # Ignore missing docstrings in __init__: D107
 # Ignore line too long errors: E501. Flake8 flags comments and docstrings, while black doesn't. Let black handle line length.
 # Conflicts with W504 and no longer conforms to PEP8: W503
-extend-ignore = ["ANN101", "ANN102", "ANN204", "AZ100", "D107", "E501", "I900", "W503"]
+extend-ignore = ["ANN003", "ANN101", "ANN102", "ANN204", "AZ100", "D107", "E501", "I900", "W503"]
 literal-inline-quotes = "double"
 literal-multiline-quotes = "double"
 known-modules=":[noko_client],python-dateutil:[dateutil]"

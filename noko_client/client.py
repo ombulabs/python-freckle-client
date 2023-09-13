@@ -55,7 +55,7 @@ class NokoClient(BaseClient):
 
     # Entry related methods
 
-    def list_entries(self, **kwargs: dict) -> list[dict]:
+    def list_entries(self, **kwargs) -> list[dict]:
         """List all entries.
 
         By default, retrieves all entries. The entries to retrieve can be filtered based on accepted Keyword Arguments.
@@ -103,7 +103,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"entries/{entry_id}", http_method="GET")
 
-    def create_entry(self, **kwargs: dict) -> list[dict]:
+    def create_entry(self, **kwargs) -> list[dict]:
         """Create new entry in Noko.
 
         Keyword Args:
@@ -127,7 +127,7 @@ class NokoClient(BaseClient):
         data = CreateNokoEntryParameters(**kwargs).model_dump()
         return self.fetch_json("entries", post_args=data, http_method="POST")
 
-    def edit_entry(self, entry_id: int | str, **kwargs: dict) -> list[dict]:
+    def edit_entry(self, entry_id: int | str, **kwargs) -> list[dict]:
         """Edit an existing entry.
 
         Args:
@@ -252,7 +252,7 @@ class NokoClient(BaseClient):
 
     # Tag related methods
 
-    def list_tags(self, **kwargs: dict) -> list[dict]:
+    def list_tags(self, **kwargs) -> list[dict]:
         """List all tags.
 
         By default, retrieves all tags. The tags to retrieve can be filtered based on accepted Keyword Arguments.
@@ -292,7 +292,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"tags/{tag_id}", http_method="GET")
 
-    def get_all_entries_for_tag(self, tag_id: str | int, **kwargs: dict) -> list[dict]:
+    def get_all_entries_for_tag(self, tag_id: str | int, **kwargs) -> list[dict]:
         """Retrieve all time entries associated with a tag.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -408,7 +408,7 @@ class NokoClient(BaseClient):
 
     # Project related methods
 
-    def list_projects(self, **kwargs: dict) -> list[dict]:
+    def list_projects(self, **kwargs) -> list[dict]:
         """List all projects from Noko.
 
         By default, retrieves all projects. Projects to retrieve can be filtered based on accepted Keyword Arguments.
@@ -439,7 +439,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"projects/{project_id}", http_method="GET")
 
-    def create_project(self, **kwargs: dict) -> list[dict]:
+    def create_project(self, **kwargs) -> list[dict]:
         """Create new project in Noko.
 
         Keyword Args:
@@ -459,7 +459,7 @@ class NokoClient(BaseClient):
         return self.fetch_json("projects", post_args=data, http_method="POST")
 
     def get_all_entries_for_project(
-        self, project_id: str | int, **kwargs: dict
+        self, project_id: str | int, **kwargs
     ) -> list[dict]:
         """Retrieve all time entries associated with a project.
 
@@ -503,9 +503,7 @@ class NokoClient(BaseClient):
             f"projects/{project_id}/entries", query_params=params, http_method="GET"
         )
 
-    def get_expenses_for_project(
-        self, project_id: str | int, **kwargs: dict
-    ) -> list[dict]:
+    def get_expenses_for_project(self, project_id: str | int, **kwargs) -> list[dict]:
         """Get all expenses associated with a project.
 
         Results can be filtered using the same keyword arguments as the ones used for the list expenses endpoint.
@@ -541,7 +539,7 @@ class NokoClient(BaseClient):
             f"projects/{project_id}/expenses", query_params=params, http_method="GET"
         )
 
-    def edit_project(self, project_id: str | int, **kwargs: dict) -> list[dict]:
+    def edit_project(self, project_id: str | int, **kwargs) -> list[dict]:
         """Edit an existing project.
 
         Args:
@@ -671,7 +669,7 @@ class NokoClient(BaseClient):
 
     # Project group related methods
 
-    def list_project_groups(self, **kwargs: dict) -> list[dict]:
+    def list_project_groups(self, **kwargs) -> list[dict]:
         """List all project groups from Noko.
 
         Keyword Args:
@@ -685,7 +683,7 @@ class NokoClient(BaseClient):
         params = GetNokoProjectGroupsParameters(**kwargs).model_dump()
         return self.fetch_json("project_groups", query_params=params, http_method="GET")
 
-    def create_project_group(self, **kwargs: dict) -> list[dict]:
+    def create_project_group(self, **kwargs) -> list[dict]:
         """Create a new project group.
 
         Keyword Args:
@@ -728,7 +726,7 @@ class NokoClient(BaseClient):
         )
 
     def get_all_entries_for_project_in_project_group(
-        self, project_group_id: str | int, **kwargs: dict
+        self, project_group_id: str | int, **kwargs
     ) -> list[dict]:
         """Retrieve all time entries associated with the projects in a project group.
 
@@ -775,7 +773,7 @@ class NokoClient(BaseClient):
         )
 
     def get_all_projects_in_project_group(
-        self, project_group_id: str | int, **kwargs: dict
+        self, project_group_id: str | int, **kwargs
     ) -> list[dict]:
         """Retrieve all projects in a project group.
 
@@ -876,7 +874,7 @@ class NokoClient(BaseClient):
 
     # Invoice related methods
 
-    def list_invoices(self, **kwargs: dict) -> list[dict]:
+    def list_invoices(self, **kwargs) -> list[dict]:
         """List Noko invoices.
 
         Keyword Args:
@@ -953,7 +951,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"invoices/{invoice_id}", http_method="GET")
 
-    def create_invoice(self, **kwargs: dict) -> list[dict]:
+    def create_invoice(self, **kwargs) -> list[dict]:
         """Create a new invoice in Noko.
 
         For additional information on options available for rate_calculation, taxes and customisation, refer to the
@@ -1004,7 +1002,7 @@ class NokoClient(BaseClient):
         data = CreateNokoInvoiceParameters(**kwargs).model_dump()
         return self.fetch_json("invoices", post_args=data, http_method="POST")
 
-    def edit_invoice(self, invoice_id: str | int, **kwargs: dict) -> list[dict]:
+    def edit_invoice(self, invoice_id: str | int, **kwargs) -> list[dict]:
         """Edit a Noko invoice.
 
         Args:
@@ -1079,7 +1077,7 @@ class NokoClient(BaseClient):
         """
         self.fetch_json(f"invoices/{invoice_id}/unpaid", http_method="PUT")
 
-    def get_invoice_entries(self, invoice_id: str | int, **kwargs: dict) -> list[dict]:
+    def get_invoice_entries(self, invoice_id: str | int, **kwargs) -> list[dict]:
         """Retrieve all time entries associated with an invoice.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -1122,7 +1120,7 @@ class NokoClient(BaseClient):
             f"invoices/{invoice_id}/entries", query_params=params, http_method="GET"
         )
 
-    def get_invoice_expenses(self, invoice_id: str | int, **kwargs: dict) -> list[dict]:
+    def get_invoice_expenses(self, invoice_id: str | int, **kwargs) -> list[dict]:
         """Retrieve all expenses associated with an invoice.
 
         Results can be filtered using the same keyword arguments as the ones used for the list expenses endpoint.
@@ -1319,7 +1317,7 @@ class NokoClient(BaseClient):
 
     # Expenses related methods
 
-    def list_expenses(self, **kwargs: dict) -> list[dict]:
+    def list_expenses(self, **kwargs) -> list[dict]:
         """List expenses from Noko.
 
         Keyword Args:
@@ -1358,7 +1356,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"expenses/{expense_id}", http_method="GET")
 
-    def create_expense(self, **kwargs: dict) -> list[dict]:
+    def create_expense(self, **kwargs) -> list[dict]:
         """Create a new expense in Noko.
 
         Keyword Args:
@@ -1379,7 +1377,7 @@ class NokoClient(BaseClient):
         data = CreateNokoExpenseParameters(**kwargs).model_dump()
         return self.fetch_json("expenses", post_args=data, http_method="POST")
 
-    def edit_expense(self, expense_id: str | int, **kwargs: dict) -> list[dict]:
+    def edit_expense(self, expense_id: str | int, **kwargs) -> list[dict]:
         """Edit an expense in Noko.
 
         Args:
@@ -1427,7 +1425,7 @@ class NokoClient(BaseClient):
 
     # User related methods
 
-    def list_users(self, **kwargs: dict) -> list[dict]:
+    def list_users(self, **kwargs) -> list[dict]:
         """List all Noko users in the account.
 
         Keyword Args:
@@ -1455,7 +1453,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"users/{user_id}", http_method="GET")
 
-    def get_user_entries(self, user_id: int | str, **kwargs: dict) -> list[dict]:
+    def get_user_entries(self, user_id: int | str, **kwargs) -> list[dict]:
         """Get all entries associated with a user.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -1498,7 +1496,7 @@ class NokoClient(BaseClient):
             f"users/{user_id}/entries", query_params=params, http_method="GET"
         )
 
-    def get_user_expenses(self, user_id: str | int, **kwargs: dict) -> list[dict]:
+    def get_user_expenses(self, user_id: str | int, **kwargs) -> list[dict]:
         """Retrieve all expenses associated with a user.
 
         Results can be filtered using the same keyword arguments as the ones used for the list expenses endpoint.
@@ -1534,7 +1532,7 @@ class NokoClient(BaseClient):
             f"users/{user_id}/expenses", query_params=params, http_method="GET"
         )
 
-    def create_user(self, **kwargs: dict) -> list[dict]:
+    def create_user(self, **kwargs) -> list[dict]:
         """Create a new Noko user.
 
         If your account has per-user billing, adding a new user will affect the total of your next invoice.
@@ -1552,7 +1550,7 @@ class NokoClient(BaseClient):
         data = CreateNokoUserParameters(**kwargs).model_dump()
         return self.fetch_json("users", post_args=data, http_method="POST")
 
-    def edit_user(self, user_id: str | int, **kwargs: dict) -> list[dict]:
+    def edit_user(self, user_id: str | int, **kwargs) -> list[dict]:
         """Edit a Noko user's details.
 
         Args:
@@ -1686,7 +1684,7 @@ class NokoClient(BaseClient):
 
     # Team related methods
 
-    def list_teams(self, **kwargs: dict) -> list[dict]:
+    def list_teams(self, **kwargs) -> list[dict]:
         """List all teams in Noko.
 
         Keyword Args:
@@ -1711,7 +1709,7 @@ class NokoClient(BaseClient):
         """
         return self.fetch_json(f"teams/{team_id}", http_method="GET")
 
-    def create_team(self, **kwargs: dict) -> list[dict]:
+    def create_team(self, **kwargs) -> list[dict]:
         """Create a new team in Noko.
 
         Keyword Args:
@@ -1740,9 +1738,7 @@ class NokoClient(BaseClient):
             f"teams/{team_id}", post_args=post_args, http_method="PUT"
         )
 
-    def get_entries_for_users_in_team(
-        self, team_id: str | int, **kwargs: dict
-    ) -> list[dict]:
+    def get_entries_for_users_in_team(self, team_id: str | int, **kwargs) -> list[dict]:
         """Get all entries associated with a team.
 
         Results can be filtered using the same keyword arguments as the ones used for the list entries endpoint.
@@ -1785,7 +1781,7 @@ class NokoClient(BaseClient):
             f"teams/{team_id}/entries", post_args=data, http_method="GET"
         )
 
-    def get_users_in_team(self, team_id: str | int, **kwargs: dict) -> list[dict]:
+    def get_users_in_team(self, team_id: str | int, **kwargs) -> list[dict]:
         """Get all users in a team.
 
         Results can be filtered using the same keyword arguments as the ones used for the users entries endpoint.
