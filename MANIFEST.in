@@ -3,6 +3,7 @@ include LICENSE
 include DESCRIPTION
 include CHANGELOG.txt
 include README.md
+include py.typed
 graft freckle_client
 global-exclude *.orig *.pyc *.log *.swp local_settings.py
 prune freckle_client/tests/coverage

@@ -7,7 +7,7 @@ https://github.com/sarumont/py-trello/blob/master/trello/__init__.py#L108
 """
 import json
 import warnings
-from typing import Callable, List, Optional
+from typing import Callable
 
 import requests
 
@@ -47,10 +47,10 @@ class FreckleClient:
         self,
         uri_path: str,
         http_method: str = "GET",
-        headers: Optional[dict] = None,
-        query_params: Optional[dict] = None,
-        post_args: Optional[dict] = None,
-    ) -> Optional[List[dict]]:
+        headers: dict | None = None,
+        query_params: dict | None = None,
+        post_args: dict | None = None,
+    ) -> list[dict] | None:
         """
         Fetch some JSON from Noko.
 
@@ -118,10 +118,10 @@ class FreckleClientV2:
         self,
         uri_path: str,
         http_method: str = "GET",
-        headers: Optional[dict] = None,
-        query_params: Optional[dict] = None,
-        post_args: Optional[dict] = None,
-    ) -> Optional[List[dict]]:
+        headers: dict | None = None,
+        query_params: dict | None = None,
+        post_args: dict | None = None,
+    ) -> list[dict] | None:
         """
         Fetch some JSON from Noko.
 
@@ -165,10 +165,10 @@ class FreckleClientV2:
     def _make_request(
         http_method: str,
         url: str,
-        headers: Optional[dict] = None,
-        query_params: Optional[dict] = None,
-        post_args: Optional[dict] = None,
-    ) -> Optional[List[dict]]:
+        headers: dict | None = None,
+        query_params: dict | None = None,
+        post_args: dict | None = None,
+    ) -> list[dict] | None:
         results: list = []
         while url:
             # perform the HTTP requests, if possible uses OAuth authentication
