@@ -24,9 +24,9 @@ def format_date(value: str | datetime) -> str:
     return date_to_string(value) if isinstance(value, datetime) else value
 
 
-def format_id_lists(value: str | list | None) -> str | None:
+def format_id_lists(value: str | int | list | None) -> str | None:
     """If IDs provided as lists, convert to a comma separated string."""
-    return list_to_string(value) if isinstance(value, list) else value
+    return list_to_string(value) if isinstance(value, list) else str(value)
 
 
 def format_list_of_integers(value: list | None) -> list | None:

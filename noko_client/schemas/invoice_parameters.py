@@ -129,7 +129,7 @@ class GetNokoInvoicesParameters(BaseModel):
     total_amount_from: int | float | None = None
     total_amount_to: int | float | None = None
     recipient_details: str | None = None
-    project_ids: str | list | None = None
+    project_ids: str | int | list | None = None
     company_name: str | None = None
     company_details: str | None = None
     description: str | None = None

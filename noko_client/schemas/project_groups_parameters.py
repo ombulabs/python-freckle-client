@@ -13,7 +13,7 @@ class CreateNokoProjectGroupsParameters(BaseModel):
     """Process and validate parameters to make POST requests to the `project_groups` endpoint."""
 
     name: str
-    project_ids: str | list
+    project_ids: str | int | list
 
     _format_id_lists = field_validator("project_ids")(format_id_lists)
 
@@ -30,7 +30,7 @@ class GetNokoProjectGroupsParameters(BaseModel):
     """Process and validate parameters to make GET requests to the `project_groups` endpoint."""
 
     name: str | None = None
-    project_ids: str | list | None = None
+    project_ids: str | int | list | None = None
 
     _format_id_lists = field_validator("project_ids")(format_id_lists)
 

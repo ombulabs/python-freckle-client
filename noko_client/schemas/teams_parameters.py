@@ -12,7 +12,7 @@ class BaseTeam(BaseModel):
     """Base model for the actions related to the `team` endpoint."""
 
     name: str | None = None
-    user_ids: str | list | None = None
+    user_ids: str | int | list | None = None
 
     _format_user_ids = field_validator("user_ids")(format_id_lists)
 
@@ -29,7 +29,7 @@ class CreateNokoTeamParameters(BaseTeam):
     """Process and validate parameters to make POST requests to the `teams` endpoint."""
 
     name: str
-    user_ids: str | list
+    user_ids: str | int | list
 
 
 class GetNokoTeamsParameters(BaseTeam):
