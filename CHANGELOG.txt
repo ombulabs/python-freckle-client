@@ -1,3 +1,7 @@
+=== 1.0.5 ===
+
+Minor fixes to docs and to the Noko client
+
 === 1.0.0 ===
 
 * Implement new NokoClient for the v2 API
