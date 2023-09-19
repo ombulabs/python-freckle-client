@@ -60,7 +60,7 @@ class GetNokoEntriesParameters(BaseModel):
 
     user_ids: str | list | None = None
     description: str | None = None
-    project_ids: str | list | None = None
+    project_ids: str | int | list | None = None
     tag_ids: str | list | None = None
     tag_filter_type: str | None = None
     from_: str | datetime | None = Field(alias="from", default=None)
