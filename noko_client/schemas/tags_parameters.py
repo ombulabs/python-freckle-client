@@ -9,10 +9,10 @@ from noko_client.schemas.validators import format_booleans
 
 
 class GetNokoTagsParameters(BaseModel):
-    """Process and validate parameters to make GET requests to the `entries` endpoint."""
+    """Process and validate parameters to make GET requests to the `tags` endpoint."""
 
-    name: str | None
-    billable: str | bool | None
+    name: str | None = None
+    billable: str | bool | None = None
 
     _format_booleans = field_validator("billable")(format_booleans)
 
