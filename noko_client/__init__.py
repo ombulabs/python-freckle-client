@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 """Noko client package."""
-__version__ = "1.1.0"  # pragma: no cover
+__version__ = "1.1.2"  # pragma: no cover
